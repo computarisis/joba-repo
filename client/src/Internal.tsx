@@ -27,10 +27,11 @@ const emptyApplication: applicationType = {
 };
 
 
-function EditModal ( {itemEdit, setEditItem, createFlag}: 
+function EditModal ( {itemEdit, setEditItem, createFlag, actionText}: 
   {itemEdit: applicationType | null,
     setEditItem: React.Dispatch<SetStateAction<applicationType|null>>, 
-    createFlag: boolean 
+    createFlag: boolean , 
+    actionText: string
 
   }
 ) 
@@ -77,6 +78,7 @@ function EditModal ( {itemEdit, setEditItem, createFlag}:
         setEditVar={setEditVar}
         STATUS_OPTS={STATUS_OPTS}
         setEditItem={setEditItem}
+        actionText= {actionText}
       />
       , 
       document.body
@@ -182,7 +184,7 @@ function AppList (
         )
       }
       { 
-        editItem &&  <EditModal itemEdit={editItem} setEditItem ={setEditItem} createFlag= {false}></EditModal>
+        editItem &&  <EditModal itemEdit={editItem} setEditItem ={setEditItem} createFlag= {false} actionText= {"Edit"}></EditModal>
       }
 
      </div>
@@ -369,7 +371,7 @@ function OptTab  () {
       </div>
 
       { 
-        addItem &&  <EditModal itemEdit={addItem} setEditItem ={setAddItem} createFlag= {true}></EditModal>
+        addItem &&  <EditModal itemEdit={addItem} setEditItem ={setAddItem} createFlag= {true} actionText= {"Create"}></EditModal>
       }
 
 

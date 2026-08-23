@@ -105,13 +105,15 @@ export function EditAppComponent({
     editVar,
     setEditVar,
     STATUS_OPTS,
-    setEditItem
+    setEditItem, 
+    actionText
   }: {
     onUpdate: FormEventHandler<HTMLFormElement>;
     editVar: applicationType | null;
     setEditVar: Dispatch<SetStateAction<applicationType | null>>;
     STATUS_OPTS: string[];
     setEditItem: (value: null) => void;
+    actionText: string 
   }) {
 
   return (
@@ -121,7 +123,7 @@ export function EditAppComponent({
 
           <div className="flex flex-col">
             <span className="text-lg font-bold">
-              Edit application
+              {actionText} application
             </span>
             <span className="text-gray-500 text-xs">
               Update the details below as you see fit.
