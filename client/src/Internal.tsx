@@ -44,11 +44,11 @@ function EditModal ( {itemEdit, setEditItem, createFlag, actionText}:
     event.preventDefault ()
     //if (!editVar?.id) return  //See 
 
-    console.log ('onUpdate call --- ', createFlag)
+    //console.log ('onUpdate call --- ', createFlag)
     //When createFlag is true it signals a create call ; when it is false, it signals an update call  
     if (createFlag) await controller.fetch (AppResourceCreate,  editVar)
     else {
-      console.log ('onUpdate call prior --- ',  editVar?.id)
+      //console.log ('onUpdate call prior --- ',  editVar?.id)
       if (!editVar?.id) return  
       const editVarArg = {
         company: editVar?.company,
@@ -61,10 +61,9 @@ function EditModal ( {itemEdit, setEditItem, createFlag, actionText}:
         notes: editVar?.notes,
       }
 
-      console.log ('sending ... ', editVarArg)
+      //console.log ('sending ... ', editVarArg)
       await controller.fetch (AppResourceUpdate, {id: editVar?.id}, editVarArg)
-
-      console.log ('onUpdate call through --- ',  editVar?.id)
+      //console.log ('onUpdate call through --- ',  editVar?.id)
    }
     setEditItem (null)
   }
@@ -116,40 +115,9 @@ function AppList (
   const [editItem, setEditItem]= useState<applicationType|null>  (null)
  
   const controller= useController () ; 
-  const createMutation= (objData: applicationType) => {
-    controller.fetch (AppResourceCreate, objData)
-  }
   const deleteMutation= (objData: applicationType) => {
     controller.fetch (AppResourceDelete, {id:objData.id})
   }
-
-
-
-  //FORM submit
-  const handleNewApp= (event: React.FormEvent<HTMLFormElement>) =>{
-    event.preventDefault ()
-
-    
-    const formData= new FormData (event.currentTarget) 
-    const objData=  {
-      id: 0, 
-      company: (formData.get ("Company") as string) || "",  //Meta Cordoba
-      role: ( formData.get ("Role") as string) || "", //Adaped Sr Developer
-      status: "applied",
-      applicationDate: "2026-12-12",
-      jobUrl: "https://example.com",
-      salaryMin: 1000,
-      salaryMax: 10000,
-      notes: "string", 
-      createdAt: null, 
-      updatedAt:null 
-    } as applicationType
-    createMutation (objData)
-
-  
-  }
-
-
 
   //TODO: Format: Date-Salary-  changing status format 
   return (
