@@ -10,8 +10,21 @@ import {type applicationType, Application, AppResourceCreate, AppResourceDelete,
 import {useQueryClient, useMutation, QueryClient} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {EditAppComponent} from  './components.js'
-const FETCH_SIZE= 10
 
+const FETCH_SIZE= 10
+const emptyApplication: applicationType = {
+  id: 0,
+  company: null,
+  role: null,
+  status: 'applied',
+  applicationDate: null,
+  jobUrl: null,
+  salaryMin: null,
+  salaryMax: null,
+  notes: null,
+  createdAt: null,
+  updatedAt: null 
+};
 
 
 function EditModal ( {itemEdit, setEditItem, createFlag}: 
@@ -188,23 +201,24 @@ function OptTab  () {
   //if paraCursor null, no more to show 
   const  onQuickAdd = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault ()
-
     const createMutation= (objData: applicationType) => {
       controller.fetch (AppResourceCreate, objData)
     }
     const formData= new FormData (event.currentTarget) 
+
+    //TODO: Add validation to ensure formData is proper  
     const objData=  {
       id: 0, 
-      company: (formData.get ("Company") as string) || "",  //Meta Cordoba
-      role: ( formData.get ("Role") as string) || "", //Adaped Sr Developer
-      status: "applied",
-      applicationDate: "2026-12-12",
-      jobUrl: "https://example.com",
-      salaryMin: 1000,
-      salaryMax: 10000,
-      notes: "string", 
-      createdAt: null, 
-      updatedAt:null 
+      company: (formData.get ("Company") as string) ,  
+      role: ( formData.get ("Role") as string), 
+      status:  emptyApplication.status,
+      applicationDate: emptyApplication.applicationDate,
+      jobUrl: emptyApplication.jobUrl,
+      salaryMin: emptyApplication.jobUrl,
+      salaryMax: emptyApplication.jobUrl,
+      notes: emptyApplication.notes, 
+      createdAt: emptyApplication.createdAt, 
+      updatedAt:emptyApplication.updatedAt 
     } as applicationType
     createMutation (objData)
 
@@ -212,25 +226,11 @@ function OptTab  () {
 
   const [curPage, setCurPage] = useState (1) 
   const [limitPerPage, setLimitPerPage]= useState (5)
-  const emptyApplication: applicationType = {//see
-    id: 0,
-    company: null,
-    role: null,
-    status: null,
-    applicationDate: null,
-    jobUrl: null,
-    salaryMin: null,
-    salaryMax: null,
-    notes: null,
-    createdAt: null,
-    updatedAt: null 
-  };
   const [addItem , setAddItem] = useState <applicationType|null> (null)
-  //let curCursor= useRef<string|null>(null)
-
   const curCursor= useRef<string|null> (null)
   const appDataEndpoint= new All (Application)
   const cacheStore= useQuery (appDataEndpoint)
+
   //sort and slice 
   let cacheStoreSliced= cacheStore?.slice ((curPage-1)*limitPerPage, (curPage-1)*limitPerPage+limitPerPage)
 
