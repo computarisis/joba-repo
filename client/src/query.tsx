@@ -55,7 +55,6 @@ export const AppResource= resource ({
   path: '/api/applications/:id', 
   schema: Application, 
   optimistic: true, 
-  paginationField: 'cursor'
 
 })
 
@@ -116,9 +115,9 @@ export const AppResourceLogin = AppResource.create.extend (
   }
 )
 
-export const AppResourceReadPage= AppResource.getList.getPage.extend (
+export const AppResourceReadPage= AppResource.getList.extend (
   {
-    path: '/api/applications' ,  //SEE
+    path: '/api/applications' ,
     searchParams: {} as  readParam , 
 
     schema: {
