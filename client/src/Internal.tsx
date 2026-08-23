@@ -10,7 +10,7 @@ import {type applicationType, Application, AppResourceCreate, AppResourceDelete,
 import {useQueryClient, useMutation, QueryClient} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {EditAppComponent} from  './components.js'
-const FETCH_SIZE= 15
+const FETCH_SIZE= 10
 
 
 
@@ -211,7 +211,7 @@ function OptTab  () {
   }
 
   const [curPage, setCurPage] = useState (1) 
-  const [limitPerPage, setLimitPerPage]= useState (10)
+  const [limitPerPage, setLimitPerPage]= useState (5)
   const emptyApplication: applicationType = {//see
     id: 0,
     company: null,
@@ -241,17 +241,16 @@ function OptTab  () {
   //Initial fetch (Note: this is needed for when reloading the page)
   useEffect (
     ()=> {
-      controller.fetch (AppResourceReadPage, {limit:10})
+      controller.fetch (AppResourceReadPage, {limit:FETCH_SIZE})
     }, []
   )
-
 
   if (!curCursor.current) curCursor.current= updatedCursor 
   else if ( cachedResp.nextCursor) curCursor.current= cachedResp.nextCursor
 
 
-  let numItems: number| null |undefined=10
-  numItems= cacheStore?.length ?? 10
+  let numItems: number| null |undefined=FETCH_SIZE
+  numItems= cacheStore?.length ?? FETCH_SIZE
 
   const analizePage = (curPage: number, limit: number)=> {
     //Not sufficient data
@@ -291,12 +290,11 @@ function OptTab  () {
    
     if (!analizePage (curPage, limitPerPage) ){
 
-
       //refetch  from server ; fetching can be checked elsewhere to indicate page is //being loaded from server 
       const load = async () => {
         try {
          // setLoading (true)
-          await fcache (curCursor.current)  //SEE 
+          await fcache (curCursor.current)
 
         }
         finally {
@@ -305,7 +303,6 @@ function OptTab  () {
       }
 
       load ()
-     
      
     }
     else {
