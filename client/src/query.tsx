@@ -2,7 +2,7 @@
 
 
 import {Entity, resource, RestEndpoint} from '@data-client/rest'
-const API_URL = "http://localhost:3001"
+const API_URL = ""
 
 export let updatedCursor : string|null  = null 
 export type applicationType= 

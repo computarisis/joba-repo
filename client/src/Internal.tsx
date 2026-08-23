@@ -11,7 +11,6 @@ import {useQueryClient, useMutation, QueryClient} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {EditAppComponent} from  './components.js'
 const FETCH_SIZE= 15
-const API_URL = "http://localhost:3001"
 
 
 
@@ -320,7 +319,7 @@ function OptTab  () {
   const {isPending, mutate }= useMutation (
     {
       mutationFn: async () => {
-        const res= await fetch (API_URL+ '/api/auth/logout', {
+        const res= await fetch ('/api/auth/logout', {
           method: "POST", 
           credentials: "include", 
           headers: {

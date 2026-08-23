@@ -18,9 +18,10 @@ import hero2 from './assets/hero2.jpg'
 import hero3 from './assets/hero3.jpg'
 import './App.css'
 
+// sudo networksetup -setmanual "Wi-Fi" 192.168.69.50 255.255.255.0 192.168.68.1
+
 import  OptTab from './Internal.js'
 import { Route } from 'react-router-dom';
-const API_URL = "http://localhost:3001"
 //X: Need to fix form getting submitted 
 
 type AppResp= {
@@ -47,7 +48,7 @@ function ForgotPasswordModal () {
   const {isPending, data, mutate, isSuccess}= useMutation (
     {
       mutationFn: async (emailParam: string)=> {
-        const res= await fetch (API_URL + '/api/auth/forgot-password',  {
+        const res= await fetch ('/api/auth/forgot-password',  {
           method: "POST", 
           headers: {
             "Content-type": "Application/json"
@@ -191,7 +192,7 @@ function RegModal({signModal, setSignModal}: {
     event.preventDefault()
 
     const formData = new FormData (event.currentTarget)
-    let res = await fetch(API_URL + "/api/auth/register-validate", {
+    let res = await fetch("/api/auth/register-validate", {
       method: "POST",
       headers: {
         "Content-type": "Application/json"
@@ -575,7 +576,7 @@ function ValidateEmailTab () {
   const {mutate, isPending, isSuccess} = useMutation (
     {
       mutationFn:  async ()=> {
-         const res= await fetch (API_URL+ '/api/auth/register', {
+         const res= await fetch ('/api/auth/register', {
           method: "POST", 
           headers: {
             "Content-type":"Application/json"
@@ -640,7 +641,7 @@ function ChangePassTab () {
   const {isPending, mutate , isSuccess} = useMutation (
     {
       mutationFn: async (newPasswordParam: string)=> {
-        const res=  await fetch (API_URL+ '/api/auth/reset-password', 
+        const res=  await fetch ('/api/auth/reset-password', 
          {
             method: "POST", 
             headers: {
