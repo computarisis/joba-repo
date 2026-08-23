@@ -39,7 +39,7 @@ export const schemaPostApplication= z.object (
         company: z.string ().trim ().min (1).max (100).optional(), 
         role:  z.string ().trim ().min (1).max (100).optional(), 
         status:  z.enum ( ["saved", "applied", "interview", "offer", "rejected"]).optional(),
-        applicationDate: z.iso.datetime().optional(), 
+        applicationDate: z.iso.date().optional(), 
         jobUrl: z.string ().trim ().min(1).max (100).optional(), 
         salaryMin: z.float32().optional(), 
         salaryMax: z.float32 ().optional() , 
