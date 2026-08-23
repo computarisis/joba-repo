@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: rgb(217, 231, 243);
+}
+
+#root {
+  max-width: none;
+  padding: 0;
+}
