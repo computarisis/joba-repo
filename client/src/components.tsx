@@ -60,7 +60,7 @@ export function SignLogComponent({
         return (
       <div className="fixed inset-0 z-200 flex items-center justify-center bg-black/50">
         <div className="absolute flex items-center justify-center text-black">
-          <form className="relative flex flex-col items-center justify-center gap-1.5 rounded-xl bg-white p-20" onSubmit={handleSubmit}>
+          <form className="relative flex flex-col items-center justify-center gap-1.5 rounded-xl bg-white p-10 md:p-20" onSubmit={handleSubmit}>
             
             {handleExit &&<button type="button" className="absolute right-2 top-1 text-lg font-bold" onClick={handleExit}>X </button>  }
   
