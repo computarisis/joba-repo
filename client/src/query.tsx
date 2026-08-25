@@ -1,13 +1,13 @@
 
 
 
-import {Entity, resource, RestEndpoint} from '@data-client/rest'
+import {Entity, resource} from '@data-client/rest'
 const API_URL = ""
 
 export let updatedCursor : string|null  = null 
 export type applicationType= 
 {
-  id: number ,
+  id?: number ,
   company: string |null,
   role: string |null,
   status: string |null,
@@ -16,8 +16,8 @@ export type applicationType=
   salaryMin: number |null,
   salaryMax: number |null,
   notes: string |null,
-  createdAt: string |null ,
-  updatedAt: string |null 
+  createdAt?: string |null ,
+  updatedAt?: string |null 
 }
 
 export  type appsType= {
@@ -27,7 +27,7 @@ export  type appsType= {
 } 
 
 export class Application extends Entity {
-  id : number  =0 ; //SEE
+  id : number | undefined  = undefined ; //SEE
   company: string | null = null ;
   role : string | null = null ;
   status: string | null = null ;
@@ -40,6 +40,7 @@ export class Application extends Entity {
   updatedAt : string | null = null ;
 
   static key= 'Application'
+
 
 }
 
@@ -132,6 +133,7 @@ export const AppResourceReadPage= AppResource.getList.extend (
       }
     }, 
     process  (values: any): ReqResponse{
+      updatedCursor= values.nextCursor as string
       return {
         applications: values.applications , 
         nextCursor: values.nextCursor
@@ -167,10 +169,14 @@ export const AppResourceUpdate= AppResource.partialUpdate.extend (
   }
 )
 
-
-
-
-
-
-
-
+export const AppResourcePush= AppResource.getList.push.extend ({
+  async getRequestInit (body: any) : Promise<RequestInit> {
+    return {
+      ... (await AppResource.getList.push.getRequestInit (body)), 
+      credentials: "include"
+    }
+  }, 
+  process (value: any) : applicationType {
+    return value.application as applicationType
+  }
+})
