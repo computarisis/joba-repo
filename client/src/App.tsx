@@ -2,7 +2,7 @@
 
 import { useState, type MouseEventHandler , useEffect} from 'react'
 import {createPortal} from 'react-dom'
-import {Routes, Router, useNavigate} from 'react-router-dom'
+import {Routes, Router, useNavigate, useLocation} from 'react-router-dom'
 
 import {QueryClient, QueryClientProvider, useMutation} from '@tanstack/react-query'; 
 import { ReactQueryDevtools }  from '@tanstack/react-query-devtools';
@@ -10,8 +10,9 @@ import { ReactQueryDevtools }  from '@tanstack/react-query-devtools';
 import {AppResourceLogin} from './query.tsx'
 import {useController} from '@data-client/react'
 import {ButtonComponent , SignLogComponent} from './components.tsx'
-
 import {schemaLogIn , schemaRegVal, schemaResetPassword, schemaReg} from './schema.ts'
+
+
 const queryClient= new QueryClient ()  
 
 import hero from './assets/hero.jpg'
@@ -19,7 +20,6 @@ import hero2 from './assets/hero2.jpg'
 import hero3 from './assets/hero3.jpg'
 import './App.css'
 
-// sudo networksetup -setmanual "Wi-Fi" 192.168.69.50 255.255.255.0 192.168.68.1
 
 import  OptTab from './Internal.js'
 import { Route } from 'react-router-dom';
@@ -45,7 +45,7 @@ const panelImages: panelImages[] = [
 
 
 function ForgotPasswordModal () {
-  const navigator= useNavigate ()
+  const navigate= useNavigate ()
   const {isPending, data, mutate, isSuccess}= useMutation (
     {
       mutationFn: async (emailParam: string)=> {
@@ -73,7 +73,7 @@ function ForgotPasswordModal () {
     mutate (emailInput)
   }
   const handleExit = ()=> {
-    navigator ('/')
+    navigate ('/')
   }
 
   return ( 
@@ -95,23 +95,14 @@ function ForgotPasswordModal () {
   )
 }
 
-function LogModal({ setLoginModal}: {setLoginModal?: (value: boolean)=> void  } ) 
+function LogModal() 
 
 {
   const navigate= useNavigate ()
   const controller= useController ()
   const [isLoading, setIsLoading]= useState (false) 
   const [isError, setIsError]= useState (false) 
-  const [showModal, setShowModal]= useState (true) 
-
-
-  let handleExit 
-  //Use local setter 
-  if (setLoginModal!= undefined)  {
-    handleExit= ()=> { setLoginModal (false)}
-  }
-  else handleExit = ()=> {
-    setShowModal (false)
+  const handleExit = ()=> {
     navigate ('/')
   }
  
@@ -162,7 +153,6 @@ function LogModal({ setLoginModal}: {setLoginModal?: (value: boolean)=> void  } 
 
   {/*Logging */}
   return ( 
-    showModal && 
       createPortal(
         <SignLogComponent
           handleSubmit={handleLogIn}
@@ -190,18 +180,14 @@ function LogModal({ setLoginModal}: {setLoginModal?: (value: boolean)=> void  } 
 
 
 
-function RegModal({signModal, setSignModal}: {
-  signModal: boolean;
-  setSignModal: (value: boolean)=> void 
-
-}) 
-{
+function RegModal() {
 
   
   const navigate= useNavigate ()
   const [inputError, setInputError]  = useState (false)
+  
   function handleExit () {
-    setSignModal (false)
+   navigate ('/')
   }
 
   async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
@@ -504,18 +490,21 @@ function Features() {
 
 //log , sign in here 
 function HeroNav() {
-  const [signModal, setSignModal] = useState(false)
-  const [loginModal, setLoginModal]= useState (false)
+  const navigate= useNavigate ()
  
-  function handleSignUp() {
-    setSignModal(true)
+  const handleSignUp = () => {
     console.log("Modal entered")
+    navigate ('/register', 
+      { replace: true }
+    )
   }
   
-  function handleLogIn() {
-    setLoginModal (true) 
+  const handleLogIn =() =>{
     console.log ("Login entered")
-  }//"sticky flex flex-row m-auto aspect-3/2 top-0 h-[50px]  items-center justify-between px-5 py-5 "
+    navigate ('/login', 
+      { replace: true }
+    )
+  }
 
   return (
     <section className="bg-blue-100 px-10 py-3 " >
@@ -555,13 +544,6 @@ function HeroNav() {
             </ol>
       </div>
 
-
-      <div>
-          {signModal && <RegModal signModal= {signModal} setSignModal={setSignModal}/>}
-        </div>
-        <div> 
-          {loginModal && <LogModal  setLoginModal= {setLoginModal}></LogModal> }
-        </div> 
 
       
       <ImagePanel></ImagePanel>
@@ -759,18 +741,36 @@ function ChangePassTab () {
   )
 
 }
+
 function App () {
-  
-  
+  const location= useLocation ()
+  //Determine if url corresponds to one of the login/signup/password modals 
+
+  const isModal= ["/validate-email", "/change-password", "/login", "/forgot-password", "/register"].includes (location.pathname)
+  const bgLocation= isModal? "/": location
+
   return (
-    <Routes> 
+    <> 
+    <Routes location= {bgLocation}> 
       <Route path= "/" element= {<Home></Home> }></Route>
       <Route path= "/board" element= {<OptTab></OptTab>}></Route> 
-      <Route path= "/validate-email" element= {<ValidateEmailTab></ValidateEmailTab>}></Route> 
-      <Route path= "/change-password" element= {<ChangePassTab></ChangePassTab>}></Route> 
-      <Route path= "/login" element= {<LogModal></LogModal>}></Route> 
-      <Route path= "/forgot-password" element= {<ForgotPasswordModal></ForgotPasswordModal>}></Route> 
-    </Routes>
+    </Routes> 
+
+    {
+      isModal&& 
+        (
+          <Routes location = {location}> 
+          <Route path= "/validate-email" element= {<ValidateEmailTab></ValidateEmailTab>}></Route> 
+          <Route path= "/change-password" element= {<ChangePassTab></ChangePassTab>}></Route> 
+          <Route path= "/login" element= {<LogModal></LogModal>}></Route> 
+          <Route path= "/register" element= {<RegModal></RegModal>}></Route> 
+          <Route path= "/forgot-password" element= {<ForgotPasswordModal></ForgotPasswordModal>}></Route> 
+        </Routes>
+        )
+    }
+   
+    </>
+    
   )
 }
 
@@ -787,6 +787,8 @@ function Home() {
 }
 
 export default App
+
+
 
 
 /* 
