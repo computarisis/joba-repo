@@ -33,7 +33,8 @@ export function SignLogComponent({
     type2, 
     name1,
     name2, 
-    successMessage}: 
+    successMessage
+  }: 
 
     {handleSubmit: FormEventHandler<HTMLFormElement>; 
         handleForgotPass?: MouseEventHandler<HTMLButtonElement> ; 
@@ -51,6 +52,7 @@ export function SignLogComponent({
         name1: string,
         name2?: string,
         successMessage?: string
+        
     }) {
 
         const navigator= useNavigate ()
@@ -105,13 +107,18 @@ export function EditAppComponent({
     editVar,
     setEditVar,
     STATUS_OPTS,
-    setEditItem
+    setEditItem, 
+    actionText, 
+    inputError
   }: {
     onUpdate: FormEventHandler<HTMLFormElement>;
     editVar: applicationType | null;
     setEditVar: Dispatch<SetStateAction<applicationType | null>>;
     STATUS_OPTS: string[];
     setEditItem: (value: null) => void;
+    actionText: string ; 
+    inputError: boolean;
+    //setInputError: (value: null) => void 
   }) {
 
   return (
@@ -121,10 +128,10 @@ export function EditAppComponent({
 
           <div className="flex flex-col">
             <span className="text-lg font-bold">
-              Edit application
+              {actionText} application
             </span>
             <span className="text-gray-500 text-xs">
-              Update the details below as you see fit.
+              {actionText} the details below as you see fit.
             </span>
           </div>
 
@@ -273,8 +280,10 @@ export function EditAppComponent({
             </button>
 
             <button type="submit" className="bg-orange-500 font-semibold text-xs text-white rounded border border-orange-600 hover:bg-orange-600 px-3 py-1.5">
-              Update
+              {actionText}
             </button>
+
+            {inputError && <div> Invalid input; ensure values are correct  </div> }
           </div>
 
         </form>

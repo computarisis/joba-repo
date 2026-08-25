@@ -86,6 +86,7 @@ export const redisClient= createClient (
 await redisClient.connect ()
 
 //https://nodemailer.com/
+
 export const transporter= nodemailer.createTransport ({
   host: envConfig.mailHost,
   port: 587, 
@@ -124,6 +125,7 @@ await invalidateCache.createIndex ()
   } as typeof recoverySchema.entity 
 
   create index 
+
   await recoveryCache.save (
     {
       userId: 1,
@@ -264,4 +266,4 @@ app.use (errorHandler )
 
 
 //Start server 
-app.listen (envConfig.port, ()=> {console.log ("Starting server ... ")})
+app.listen (Number (envConfig.port), "0.0.0.0", ()=> {console.log ("Starting server ... ")})

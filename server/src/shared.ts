@@ -11,7 +11,10 @@ import {schemaRegVal, schemaReg, schemaPostApplication, schemaPatchApplication, 
 } from './schema.js'
 import {invalidateCache, pool} from './index.js'
 
+/*
+    This contains contants, types, helpers for business logic implemented in the routes 
 
+*/
 
 //Auth middleware 
 export type userToken= {
@@ -59,13 +62,14 @@ export const  dbFieldsMapping= {
 }
 
 //Note these need to be quoted to preserver camel case at runtime
+//NOTE: Using ::text to avoid conversion to js time, which causes discrepancies at runtime
 export const applicationSelect  =
 `
     id,
     company, 
     role, 
     status, 
-    application_date AS "applicationDate", 
+    application_date::text AS "applicationDate", 
     job_url AS "jobUrl", 
     salary_min AS "salaryMin", 
     salary_max AS "salaryMax", 

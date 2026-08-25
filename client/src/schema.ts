@@ -4,13 +4,13 @@ import { z } from "zod";
 
 
 export const schemaRegVal =  z.object ( {
-    name: z.string().trim().min(1).max(100).optional() ,
+    name: z.string().trim().min(1).max(100).nullish() ,
     email: z.email (), 
     password: z.string().min(8).max(32)
   }) 
-  export const schemaReg=  z.object ( {
-    token: z.string ()
-  }) 
+export const schemaReg=  z.object ( {
+  token: z.string ()
+}) 
   
 export const schemaLogIn = z.object (
    {
@@ -19,31 +19,30 @@ export const schemaLogIn = z.object (
    }
   ) 
   
-  
 export const schemaPostApplication= z.object (
     {
       company: z.string ().trim ().min (1).max (100), 
       role:  z.string ().trim ().min (1).max (100), 
       status:  z.enum ( ["saved", "applied", "interview", "offer", "rejected"]),
-      applicationDate: z.iso.date().optional(), 
-      jobUrl: z.string ().trim ().min(1).max (100).optional(), 
-      salaryMin: z.float32().optional(), 
-      salaryMax: z.float32 ().optional() , 
-      notes: z.string().optional()
+      applicationDate: z.iso.date().nullish(), 
+      jobUrl: z.string ().trim ().min(1).max (100).nullish(), 
+      salaryMin: z.float32().nullish(), 
+      salaryMax: z.float32 ().nullish() , 
+      notes: z.string().nullish()
   
     }
   )
 
   export const schemaPatchApplication = z.object (
     {
-        company: z.string ().trim ().min (1).max (100).optional(), 
-        role:  z.string ().trim ().min (1).max (100).optional(), 
-        status:  z.enum ( ["saved", "applied", "interview", "offer", "rejected"]).optional(),
-        applicationDate: z.iso.datetime().optional(), 
-        jobUrl: z.string ().trim ().min(1).max (100).optional(), 
-        salaryMin: z.float32().optional(), 
-        salaryMax: z.float32 ().optional() , 
-        notes: z.string().optional()
+        company: z.string ().trim ().min (1).max (100).nullish(), 
+        role:  z.string ().trim ().min (1).max (100).nullish(), 
+        status:  z.enum ( ["saved", "applied", "interview", "offer", "rejected"]).nullish(),
+        applicationDate: z.iso.datetime().nullish(), 
+        jobUrl: z.string ().trim ().min(1).max (100).nullish(), 
+        salaryMin: z.float32().nullish(), 
+        salaryMax: z.float32 ().nullish() , 
+        notes: z.string().nullish()
     }
   )
 

@@ -1,13 +1,13 @@
 
 
 
-import {Entity, resource, RestEndpoint} from '@data-client/rest'
-const API_URL = "http://localhost:3001"
+import {Entity, resource} from '@data-client/rest'
+const API_URL = ""
 
 export let updatedCursor : string|null  = null 
 export type applicationType= 
 {
-  id: number ,
+  id?: number ,
   company: string |null,
   role: string |null,
   status: string |null,
@@ -16,8 +16,8 @@ export type applicationType=
   salaryMin: number |null,
   salaryMax: number |null,
   notes: string |null,
-  createdAt: string |null ,
-  updatedAt: string |null 
+  createdAt?: string |null ,
+  updatedAt?: string |null 
 }
 
 export  type appsType= {
@@ -27,7 +27,7 @@ export  type appsType= {
 } 
 
 export class Application extends Entity {
-  id : number  =0 ; //SEE
+  id : number | undefined  = undefined ; //SEE
   company: string | null = null ;
   role : string | null = null ;
   status: string | null = null ;
@@ -40,6 +40,7 @@ export class Application extends Entity {
   updatedAt : string | null = null ;
 
   static key= 'Application'
+
 
 }
 
@@ -55,7 +56,6 @@ export const AppResource= resource ({
   path: '/api/applications/:id', 
   schema: Application, 
   optimistic: true, 
-  paginationField: 'cursor'
 
 })
 
@@ -116,9 +116,9 @@ export const AppResourceLogin = AppResource.create.extend (
   }
 )
 
-export const AppResourceReadPage= AppResource.getList.getPage.extend (
+export const AppResourceReadPage= AppResource.getList.extend (
   {
-    path: '/api/applications' ,  //SEE
+    path: '/api/applications' ,
     searchParams: {} as  readParam , 
 
     schema: {
@@ -133,6 +133,7 @@ export const AppResourceReadPage= AppResource.getList.getPage.extend (
       }
     }, 
     process  (values: any): ReqResponse{
+      updatedCursor= values.nextCursor as string
       return {
         applications: values.applications , 
         nextCursor: values.nextCursor
@@ -168,10 +169,14 @@ export const AppResourceUpdate= AppResource.partialUpdate.extend (
   }
 )
 
-
-
-
-
-
-
-
+export const AppResourcePush= AppResource.getList.push.extend ({
+  async getRequestInit (body: any) : Promise<RequestInit> {
+    return {
+      ... (await AppResource.getList.push.getRequestInit (body)), 
+      credentials: "include"
+    }
+  }, 
+  process (value: any) : applicationType {
+    return value.application as applicationType
+  }
+})

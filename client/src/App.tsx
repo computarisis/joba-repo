@@ -11,6 +11,7 @@ import {AppResourceLogin} from './query.tsx'
 import {useController} from '@data-client/react'
 import {ButtonComponent , SignLogComponent} from './components.tsx'
 
+import {schemaLogIn , schemaRegVal, schemaResetPassword, schemaReg} from './schema.ts'
 const queryClient= new QueryClient ()  
 
 import hero from './assets/hero.jpg'
@@ -18,9 +19,10 @@ import hero2 from './assets/hero2.jpg'
 import hero3 from './assets/hero3.jpg'
 import './App.css'
 
+// sudo networksetup -setmanual "Wi-Fi" 192.168.69.50 255.255.255.0 192.168.68.1
+
 import  OptTab from './Internal.js'
 import { Route } from 'react-router-dom';
-const API_URL = "http://localhost:3001"
 //X: Need to fix form getting submitted 
 
 type AppResp= {
@@ -47,7 +49,7 @@ function ForgotPasswordModal () {
   const {isPending, data, mutate, isSuccess}= useMutation (
     {
       mutationFn: async (emailParam: string)=> {
-        const res= await fetch (API_URL + '/api/auth/forgot-password',  {
+        const res= await fetch ('/api/auth/forgot-password',  {
           method: "POST", 
           headers: {
             "Content-type": "Application/json"
@@ -102,6 +104,7 @@ function LogModal({ setLoginModal}: {setLoginModal?: (value: boolean)=> void  } 
   const [isError, setIsError]= useState (false) 
   const [showModal, setShowModal]= useState (true) 
 
+
   let handleExit 
   //Use local setter 
   if (setLoginModal!= undefined)  {
@@ -111,27 +114,40 @@ function LogModal({ setLoginModal}: {setLoginModal?: (value: boolean)=> void  } 
     setShowModal (false)
     navigate ('/')
   }
+ 
 
-
-
+  //Note: We should not invalidate password when user tries to log in
   const handleLogIn= async (event: React.FormEvent<HTMLFormElement>) =>{
     event.preventDefault ()
     const formData= new FormData (event.currentTarget)
     
+   
+    let parsedLogin: any
+    const loginParma= {
+      email: formData.get ("Email"), 
+      password: formData.get ("Password")
+    }
+
+
+    parsedLogin= schemaLogIn.safeParse (loginParma)
+    if (parsedLogin.success) {}
+    else {
+      console.log (parsedLogin.error)
+      setIsError(true) 
+      return 
+    }
+
+
     async function  sendLogin () {
       try {
-
         setIsLoading (true) 
-        await controller.fetch (AppResourceLogin, {
-          email: formData.get ("Email") as string, 
-          password: formData. get ("Password")  as string 
-        })
-
+        await controller.fetch (AppResourceLogin, parsedLogin.data)
+        console.log (parsedLogin.data)
         //No need to check error code? SEE
         navigate ('/board')
 
       }
-      catch {
+      catch (error){
         setIsError(true) 
       }
       finally {
@@ -180,36 +196,49 @@ function RegModal({signModal, setSignModal}: {
 
 }) 
 {
-  
 
+  
   const navigate= useNavigate ()
+  const [inputError, setInputError]  = useState (false)
   function handleExit () {
     setSignModal (false)
   }
 
   async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-
+    
+    setInputError (false)
     const formData = new FormData (event.currentTarget)
-    let res = await fetch(API_URL + "/api/auth/register-validate", {
+
+
+    //Reject if any fields are undefined 
+    if (formData.get ("Name")== undefined || formData.get ("Email") == undefined || formData.get ("Password") == undefined ) {
+      setInputError (true )
+      return 
+    }
+    const formArg = schemaRegVal.safeParse({
+      name: formData.get("Name") as string,
+      email: formData.get("Email") as string,
+      password: formData.get("Password") as string,
+    })
+
+    if (formArg.success) {}
+    else {
+      console.log (formArg.error)
+      setInputError (true)
+      return 
+    }
+  
+    //Fields are guaranteed to be defined
+    let res = await fetch("/api/auth/register-validate", {
       method: "POST",
       headers: {
         "Content-type": "Application/json"
       },
       credentials:"include", 
-      body: JSON.stringify({
-        name: formData.get("Name"),
-        email: formData.get("Email"),
-        password: formData.get("Password")
-      })
+      body: JSON.stringify(formArg.data)
     })
-    console.log ( formData.get ("Name")) 
-    console.log ( formData.get ("Email"))
-    console.log ( formData.get ("Password"))
 
-    
-
-    let resJson= (await res.json ())  as AppResp
 
     if (res.status == 201) {
       navigate ('/board'
@@ -221,9 +250,8 @@ function RegModal({signModal, setSignModal}: {
       })
     }
 
-    console.log (res.status)
-    console.log (resJson)
   }
+
 
   return (
     createPortal (
@@ -240,11 +268,11 @@ function RegModal({signModal, setSignModal}: {
           <input className= "bg-white rounded-md text-center h-[30px] w-[300px]" type="password" id="Password" name= "Password" placeholder='Password'></input>
          
           <button className='bg-orange-600  text-white font-bold w-full flex justify-center items-center rounded-md' > Sign up </button>
-        
+
+          {inputError && <div> Invalid values; ensure password is between 8 and 32 characters </div> }
         </form>
       
         
-       
       </div>
     </div>, 
       document.body
@@ -568,29 +596,43 @@ function ValidateEmailTab () {
 
   //Extract from url fragment  https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
   const tokenVal= new URLSearchParams (window.location.hash.substring (1)).get ('token')
-
   type resType ={
     ok: boolean
   }
-  const {mutate, isPending, isSuccess} = useMutation (
+
+  const {mutate, isPending, isSuccess, isError} = useMutation (
     {
       mutationFn:  async ()=> {
-         const res= await fetch (API_URL+ '/api/auth/register', {
+
+        let parsedToken
+        parsedToken= schemaReg.safeParse (
+          {
+            token: tokenVal
+          }
+        )
+        if (parsedToken.success) {}
+        else {
+          console.log (parsedToken.error)
+          throw new Error ()
+        }
+         
+         const res= await fetch ('/api/auth/register', {
           method: "POST", 
           headers: {
             "Content-type":"Application/json"
           }, 
-          body: JSON.stringify ({
-            token: tokenVal
-          })
+          body: JSON.stringify (parsedToken.data)
         }) 
 
         const resJson=  await res.json () as resType
 
+        console.log ( '-----', res.status )
         if (res.status==201) {
           console.log ('valid OK')
         }
-        else throw new Error ()
+        else {
+          throw new Error ()
+        }
 
         return resJson
       }, 
@@ -602,7 +644,6 @@ function ValidateEmailTab () {
       }
       
     }
-
     , queryClient
 
   )
@@ -614,22 +655,22 @@ function ValidateEmailTab () {
   )
 
   return (
-
-    //deletedeletedeletedeletedelete
     <> 
-       <h1 className="text-6xl font-extrabold">
-        Registrate page... Confirming email...
-       </h1>
+       <h1 className="text-6xl font-extrabold"> Registrate page... Confirming email...</h1>
        {isPending && <div className="text-6xl font-extrabold">Loading...</div>}
-      {isSuccess && <>Confirmed. Proceed to the main page</>}
+       {isError && <div className="text-6xl font-extrabold">Invalid token...</div>}
+       {isSuccess && <div >Confirmed. Proceed to the main page</div>}
     </> 
-    //deletedeletedeletedeletedelete
   )
 }
 
 
 function ChangePassTab () {
 
+  type resetType= {
+    token: string , 
+    newPassword: string
+  }
   //Extract the token from the url 
   const resetToken= new URLSearchParams (window.location.hash.substring(1)). get ('token') as string
   const navigate= useNavigate ()
@@ -637,24 +678,33 @@ function ChangePassTab () {
   //Combined use for server call and local check 
   const [isError, setIsError] = useState (false)
 
+
+  
+  
+
   const {isPending, mutate , isSuccess} = useMutation (
     {
-      mutationFn: async (newPasswordParam: string)=> {
-        const res=  await fetch (API_URL+ '/api/auth/reset-password', 
+      mutationFn: async (resetObj: resetType)=> {
+
+      
+        const parsedObj= schemaResetPassword.safeParse (resetObj) 
+        if (!parsedObj.success) {
+          setIsError (true)
+          throw new Error ()
+          
+        }
+
+        const res=  await fetch ('/api/auth/reset-password', 
          {
             method: "POST", 
             headers: {
               "Content-type": "Application/json"
             }, 
-            body: JSON.stringify ({
-              token: resetToken , 
-              newPassword: newPasswordParam
-
-            })
+            body: JSON.stringify (resetObj)
          }
         )
-        console.log ('status:', res.status)
 
+        console.log ('status:', res.status)
         if (res.status!= 200) {
           
           setIsError (true)
@@ -671,25 +721,23 @@ function ChangePassTab () {
   const handleSubmit=   (event: React.FormEvent<HTMLFormElement>)=> {
     event.preventDefault ()
     const formData= new FormData (event.currentTarget)
-
     const pass1= formData.get ('password1') as string
     const pass2= formData.get ('password2') as string 
 
    
-    
-    //Validate password ... TODO
-    if ( pass1!= pass2) {
+    if ( pass1!= pass2 || typeof pass1 !== "string") {
       setIsError (true)
+      return 
     }
-
-    //TODO: Do schema validation
-    if (typeof pass1 !== "string") {
-      setIsError (true)
+    else   {
+      const resetObj= {
+        token: resetToken , 
+        newPassword: pass1
+      }
+      mutate (resetObj)
     }
-    //Make server request 
-    else   mutate (pass1) 
-
   }
+
   return (
     createPortal(
       <SignLogComponent
@@ -700,7 +748,7 @@ function ChangePassTab () {
         text1Placeholder="New Password"
         text2Placeholder="Confirm New Password"
         buttonText="Change password"
-        textError="Expired token"
+        textError="Ensure passwords match; length should be between 8 and 32 characters."
         type1= "password"
         type2="password"
         name1="password1"
