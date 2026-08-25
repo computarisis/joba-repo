@@ -82,6 +82,9 @@ apiRouter.get ('/api/applications', async (req, res)=> {
 
     const userId= req.userId 
 
+    //Can use delay to test frontend pagination functionalities 
+    //await new Promise(resolve => setTimeout(resolve, 5000));
+
     //Retrieve cursor 
     const cursor = req.query?.cursor as string | undefined 
   
@@ -173,23 +176,23 @@ apiRouter.post ('/api/applications', async (req,res) => {
     if (parsed.success){
 
         if (parsed.data == undefined) {
-            console.log ("------")
+           
             res.status (400).json ({error: "Validation failed"})
             return 
         }
 
         const [appStr, valStr, listItems]= retrieveOptData (req.userId, parsed.data)
 
-        console.log ("---Inside---")
+      
 
         try {
             const result= await pool.query (
                 `
                     INSERT INTO applications (${appStr})
                     VALUES (${valStr})
-                    RETURNING id, user_id, company, role, status, application_date AS applicationDate, 
-                        job_url AS jobUrl, salary_min AS salaryMin, salary_max AS salaryMax, notes, 
-                        created_at AS createdAt, updated_at AS updatedAt
+                    RETURNING id, user_id AS "userId", company, role, status, application_date AS "applicationDate", 
+                        job_url AS "jobUrl", salary_min AS "salaryMin", salary_max AS "salaryMax", notes, 
+                        created_at AS "createdAt", updated_at AS "updatedAt"
                     
                 `, 
                 listItems
@@ -258,6 +261,8 @@ apiRouter.patch ('/api/applications/:id', async (req, res)=> {
 
 
     if (parsed.success) {
+
+    
    
         const [ valStr, userParam, listItems, returnStr]= retrievePatchData (req.userId, parsed.data)
 
@@ -268,9 +273,9 @@ apiRouter.patch ('/api/applications/:id', async (req, res)=> {
                     UPDATE applications SET ${valStr} 
                     WHERE user_id=$${userParam} AND id=${appId}
                     
-                    RETURNING id, user_id, company, role, status, application_date AS applicationDate, 
-                    job_url AS jobUrl, salary_min AS salaryMin, salary_max AS salaryMax, notes, 
-                    created_at AS createdAt, updated_at AS updatedAt
+                    RETURNING id, user_id AS "userId", company, role, status, application_date AS "applicationDate", 
+                    job_url AS "jobUrl", salary_min AS "salaryMin", salary_max AS "salaryMax", notes, 
+                    created_at AS "createdAt", updated_at AS "updatedAt"
         
                 `
                 , listItems
@@ -279,6 +284,8 @@ apiRouter.patch ('/api/applications/:id', async (req, res)=> {
                 res.status (404).json ({error: 'Application not found'})
                 return 
             }
+
+         
 
             res.status (200).json ({
                 application : result.rows[0]
@@ -289,6 +296,7 @@ apiRouter.patch ('/api/applications/:id', async (req, res)=> {
         }
     }
     else {
+        console.log ("-", parsed.error)
        res.status (400).json  ({error: 'Validation failed'})
     }
 
