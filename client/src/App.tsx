@@ -2,7 +2,7 @@
 
 import { useState, type MouseEventHandler , useEffect} from 'react'
 import {createPortal} from 'react-dom'
-import {Routes, Router, useNavigate, useLocation} from 'react-router-dom'
+import {Routes, Router, useNavigate, useLocation, Navigate} from 'react-router-dom'
 
 import {QueryClient, QueryClientProvider, useMutation} from '@tanstack/react-query'; 
 import { ReactQueryDevtools }  from '@tanstack/react-query-devtools';
@@ -742,6 +742,41 @@ function ChangePassTab () {
 
 }
 
+
+function ProtectedBoardRoute ( {children}: {children: React.ReactNode}) {
+
+
+  const {mutate, isPending, isSuccess, isError} = useMutation (
+    {
+      mutationFn: async () => {
+        const res= await fetch ('/api/auth/me',
+          {
+            credentials: "include"
+          }
+
+        )
+        if (res.status!=200 ) {
+          throw new Error ()
+        }
+      }
+
+    }
+  )
+
+  useEffect ( ()=> {
+    mutate ()
+  }, [])
+ 
+  return (
+    <> 
+      {isPending && <div> Loading... </div>}
+      {isError && <Navigate to="/" replace />}
+
+      {isSuccess && children }
+    
+    </>
+  )
+}
 function App () {
   const location= useLocation ()
   //Determine if url corresponds to one of the login/signup/password modals 
@@ -753,7 +788,7 @@ function App () {
     <> 
     <Routes location= {bgLocation}> 
       <Route path= "/" element= {<Home></Home> }></Route>
-      <Route path= "/board" element= {<OptTab></OptTab>}></Route> 
+      <Route path= "/board" element= { <ProtectedBoardRoute><OptTab></OptTab></ProtectedBoardRoute>}></Route> 
     </Routes> 
 
     {
