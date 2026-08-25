@@ -121,9 +121,9 @@ export function EditAppComponent({
     //setInputError: (value: null) => void 
   }) {
 
-  return (
-    <div className="absolute flex max-w-2xl mx-auto inset-0 z-100">
-      <div className="relative flex max-w-2xl mx-auto h-fit z-100 bg-white text-black rounded-xl px-10 py-10 gap-10">
+  return ( //max-w-2xl
+    <div className="fixed flex w-full  mx-auto inset-0  z-100 bg-black/30  p-8 ">
+      <div className=" flex w-full max-w-lg center-items justify-center  mx-auto h-fit z-100 bg-white  text-black  rounded-xl px-10 py-10 gap-10">
         <form className="flex flex-col gap-4" onSubmit={onUpdate}>
 
           <div className="flex flex-col">
@@ -280,7 +280,7 @@ export function EditAppComponent({
             </button>
 
             <button type="submit" className="bg-orange-500 font-semibold text-xs text-white rounded border border-orange-600 hover:bg-orange-600 px-3 py-1.5">
-              {actionText}
+              Save
             </button>
 
             {inputError && <div> Invalid input; ensure values are correct  </div> }
