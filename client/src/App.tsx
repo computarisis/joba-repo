@@ -36,7 +36,7 @@ type panelImages = {
   src: [number, string, string]
 }
 
-const panelImages: panelImages[] = [
+const panelImagesObj: panelImages[] = [
   { "src": [0, 'hero', hero] },
   { "src": [1, 'hero2', hero2] },
   { "src": [2, 'hero3', hero3] }
@@ -241,10 +241,10 @@ function RegModal() {
 
   return (
     createPortal (
-      <div className='fixed flex inset-0 items-center justify-center z-200  bg-black/50'>
+      <div className='fixed flex inset-0 items-center justify-center z-200   bg-black/50'>
      
       <div className='absolute flex  items-center justify-center text-black  '>
-        <form className="relative flex flex-col items-center justify-center  bg-white gap-1.5 p-20 rounded-xl" onSubmit={handleRegister}>
+        <form className="relative flex flex-col items-center justify-center  bg-white gap-1.5 p-10 md:p-20 rounded-xl" onSubmit={handleRegister}>
           <button  type="button" className= "absolute  right-2 top-1 font-bold text-lg" onClick={ ()=> {handleExit()}}> X </button> 
 
           <input  className= "bg-white rounded-md text-center h-[30px] w-[300px] " type="email" id="Email" name="Email" placeholder='Enter your email'></input>
@@ -257,8 +257,6 @@ function RegModal() {
 
           {inputError && <div> Invalid values; ensure password is between 8 and 32 characters </div> }
         </form>
-      
-        
       </div>
     </div>, 
       document.body
@@ -269,6 +267,7 @@ function RegModal() {
 
 function ImagePanel() {
   const [curImg, setCurImg] = useState(0)
+  const navigate= useNavigate ()
 
   function onNextImg() {
     let newImg = (curImg + 1) % 3
@@ -279,15 +278,21 @@ function ImagePanel() {
     <div className= "max-w-6xl m-auto grid grid-cols-[1fr_1fr] mt-10 px-10 py-15"> 
       <div className="flex flex-col"> 
         <h3 className= "flex px-4 py-2 text-red-600 text uppercase font-bold "> Your job search organized</h3> 
-        <h2 className= "flex px-4 py-4 font-extrabold text-6xl "> Keep applications and interviews  moving forward </h2> 
+        <h2 className= "flex px-4 py-4 font-extrabold text-4xl md:text-6xl "> Keep applications and interviews  moving forward </h2> 
         <h3 className= "flex px-4 py-2 text-gray-600 text-lg text-extrabold  "> Track recruiter contacts, follow-ups, offers, applications, and interviews in a single place</h3>
       
         <div className=" px-4 py-2 grid grid-cols-[2fr_6fr] gap-2"> 
-          <button className="flex px-1 py-2 bg-orange-500 text-white text-xs items-center justify-center ">Start tracking</button> 
+          <button className="flex px-1 py-2 bg-orange-500 text-white text-xs items-center justify-center " onClick= {()=> { navigate ('register') } }>Start tracking</button> 
           <div className= "flex flex-row align-start "> 
-            <button> See how it works &rarr;</button> 
+            <button onClick= { ()=> {navigate ('register') }}> See how it works &rarr;</button> 
           </div>
          
+        </div>
+      </div>
+
+      <div className= "flex flex-row justify-center items-center hidden md:flex">
+        <div key={panelImagesObj[1].src[1]} >
+          <img src={panelImagesObj[1].src[2]}></img>
         </div>
       </div>
     </div> 
@@ -372,10 +377,12 @@ function Benefits() {
 function Testimony() {
   return (
     <>
-      <h2 id="Testimonials"></h2>
+      <h2 id="Testimony"></h2>
 
-      <section className="">
-        <div className="flex flex-row items-start justify-center gap-10 rounded bg-blue-200 p-10 text-black">
+      <section className=" bg-blue-200">
+        <div className="grid grid-rows-[1fr] md:grid-rows-none md:grid-cols-[1fr_1fr_1fr] gap-10 rounded  p-10 text-black m-auto max-w-6xl">
+         
+         
           <div className="max-w-xs">
             <h3 className="mb-1 text-xl font-bold">
               Sarah Jenkins
@@ -383,11 +390,11 @@ function Testimony() {
             <span className="mb-3 block text-sm font-medium text-gray-600">
               Software Engineer
             </span>
-
             <p>
               &quot;I was applying to dozens of roles and losing track of follow-ups. This app completely saved my job search—I landed three offers because I never missed an interview prep or deadline.&quot;
             </p>
           </div>
+
 
           <div className="max-w-xs">
             <h3 className="mb-1 text-xl font-bold">
@@ -402,6 +409,7 @@ function Testimony() {
             </p>
           </div>
 
+
           <div className="max-w-xs">
             <h3 className="mb-1 text-xl font-bold">
               Elena Rostova
@@ -409,11 +417,11 @@ function Testimony() {
             <span className="mb-3 block text-sm font-medium text-gray-600">
               Marketing Manager
             </span>
-
             <p>
               &quot;The response rate insights helped me realize which resume versions actually worked. It turned what is usually a chaotic process into an organized, strategic routine.&quot;
             </p>
           </div>
+
         </div>
       </section>
     </>
@@ -428,17 +436,19 @@ function Features() {
       <section className=" bg-blue-200 px-5 py-6 ">
 
         <div className= "grid grid-row [1fr_1fr] m-auto max-w-6xl gap-4 px-10 py-10"> 
+          <div className= "flex justify-center items-center">
 
-          <div className= "grid grid-cols-[1fr_1fr]"> 
-            <div className="flex flex-col gap-4 "> 
-              <div className="text-sm text-red-600  font-bold ">Everything in one place</div> 
-              <div className="font-extrabold text-4xl ">Built around the way a real job search works </div> 
+            <div className= "grid grid-cols-[1fr]"> 
+              <div className="flex flex-col gap-4 "> 
+                <div className="text-sm text-red-600  font-bold ">Everything in one place</div> 
+                <div className="font-extrabold text-4xl ">Built around the way a real job search works </div> 
 
-              <div className="text-bold text-gray-500">Instead of scatterred notes, eails, and spreadsheets, Joba gives each opportunity 
-              a clear place to live  </div> 
+                <div className="text-bold text-gray-500">Instead of scatterred notes, eails, and spreadsheets, Joba gives each opportunity 
+                a clear place to live  </div> 
+              </div> 
+    
             </div> 
-          </div> 
-         
+          </div>
 
           <div className="flex flex-col md:flex-row  items-start justify-center gap-10 rounded  py-10 text-black m-auto max-w-6xl">
             <div className="bg-white text-blac px-8 py-8 flex- flex-col rounded-lg "> 
@@ -510,13 +520,17 @@ function HeroNav() {
     <section className="bg-blue-100 px-10 py-3 " >
       <div className="sticky flex flex-row m-auto max-w-6xl op-0 h-[50px]  items-center justify-between px-5 py-5 ">
       
-      
-        <div className="text-2xl font-bold ">
-          Joba
+        <div className= "flex flex-col  ">
+          <div className="text-2xl font-bold flex flex-row justify-center items-center">
+            <div> 
+              Joba
+            </div>
+          </div>
+
         </div>
-
-
-          <nav>
+        
+          
+        <nav className="hidden md:block">
             <ol className='flex flex-row gap-3.5 font-semibold '>
               <li>
                 <a href="#Features"> Features</a>
@@ -532,7 +546,6 @@ function HeroNav() {
             </ol>
           </nav>
     
-
 
           <ol className="flex flex-row gap-2">
               <li>
@@ -557,17 +570,14 @@ function Footer() {
   return (
 
       <footer className="text-white bg-black h-[50px] px-20 py-20">
-        <ol className= "flex px-10 py-10 ">
-          <li>
-            All rights reserved
-          </li>
-          <li>
-            (787)- 238-2349
-          </li>
-          <li>
-            Utuado, Puerto Rico
-          </li>
-        </ol>
+       <div className= "m-auto flex items-center justify-center"> 
+          <div className= "flex items-center justify-center"> 
+            <ul>
+              <li>Utuado, Puerto Rico</li>
+              <li>Contact us through github</li>
+            </ul>
+          </div>
+       </div>
       </footer>
 
   )
