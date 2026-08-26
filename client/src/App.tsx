@@ -1,52 +1,33 @@
 
 
-import { useState, type MouseEventHandler , useEffect} from 'react'
+import { useState, useEffect} from 'react'
 import {createPortal} from 'react-dom'
-import {Routes, Router, useNavigate, useLocation, Navigate} from 'react-router-dom'
-
-import {QueryClient, QueryClientProvider, useMutation} from '@tanstack/react-query'; 
-import { ReactQueryDevtools }  from '@tanstack/react-query-devtools';
-
+import {Routes, useNavigate, useLocation, Navigate} from 'react-router-dom'
+import {QueryClient, useMutation} from '@tanstack/react-query'; 
 import {AppResourceLogin} from './query.tsx'
 import {useController} from '@data-client/react'
-import {ButtonComponent , SignLogComponent} from './components.tsx'
+import {SignLogComponent} from './components.tsx'
 import {schemaLogIn , schemaRegVal, schemaResetPassword, schemaReg} from './schema.ts'
+import hero2 from './assets/heroImg.jpg'
+import './App.css'
+import  OptTab from './Internal.js'
+import { Route } from 'react-router-dom';
 
 
 const queryClient= new QueryClient ()  
-
-import hero from './assets/hero.jpg'
-import hero2 from './assets/hero2.jpg'
-import hero3 from './assets/hero3.jpg'
-import './App.css'
-
-
-import  OptTab from './Internal.js'
-import { Route } from 'react-router-dom';
-//X: Need to fix form getting submitted 
-
-type AppResp= {
-  applications: {
-    id: string
-  }[], 
-  nextCursor: string| null 
-}
-
 type panelImages = {
   src: [number, string, string]
 }
 
 const panelImagesObj: panelImages[] = [
-  { "src": [0, 'hero', hero] },
-  { "src": [1, 'hero2', hero2] },
-  { "src": [2, 'hero3', hero3] }
-]
+  { "src": [0, 'heroImg', hero2] },
 
+]
 
 
 function ForgotPasswordModal () {
   const navigate= useNavigate ()
-  const {isPending, data, mutate, isSuccess}= useMutation (
+  const {isPending, mutate, isSuccess}= useMutation (
     {
       mutationFn: async (emailParam: string)=> {
         const res= await fetch ('/api/auth/forgot-password',  {
@@ -81,14 +62,15 @@ function ForgotPasswordModal () {
         <SignLogComponent
           handleSubmit={handleForgotPass}
           handleExit={handleExit}
-          isSuccess= {true}
-          //textOpt="Forgot password?"
+          isSuccess= {isSuccess}
+          isLoading= {isPending}
           text1Placeholder="Email"
           text2Placeholder="Password"
           buttonText="Get email"
           type1= "email"
           name1="email"
-          successMessage='Recovery mail will be sent if an account with such email exists'
+          successMessage='If email is registered, you will receive a recovery message '
+          redirectToLogIn= {true}
         />,
         document.body
       )
@@ -105,7 +87,6 @@ function LogModal()
   const handleExit = ()=> {
     navigate ('/')
   }
- 
 
   //Note: We should not invalidate password when user tries to log in
   const handleLogIn= async (event: React.FormEvent<HTMLFormElement>) =>{
@@ -167,7 +148,7 @@ function LogModal()
           buttonText="Log in"
           textError="Invalid email or password"
           type1= "Email"
-          type2="Password"
+          type2="password"
           name1="Email"
           name2="Password"
         />,
@@ -179,100 +160,93 @@ function LogModal()
 
 
 
-
 function RegModal() {
 
   
   const navigate= useNavigate ()
-  const [inputError, setInputError]  = useState (false)
-  
   function handleExit () {
    navigate ('/')
   }
 
+  const {isSuccess, mutate, isPending, isError} = useMutation ( 
+    {
+      mutationFn: async (formData: FormData) => {
+        //Reject if any fields are undefined 
+       if (formData.get ("Name")== undefined || formData.get ("Email") == undefined || formData.get ("Password") == undefined ) {
+         return 
+       }
+       const formArg = schemaRegVal.safeParse({
+         name: formData.get("Name") as string,
+         email: formData.get("Email") as string,
+         password: formData.get("Password") as string,
+       })
+ 
+       if (formArg.success) {}
+       else {
+         console.log (formArg.error)
+         throw new Error ()
+         return 
+
+       }
+     
+       //Fields are guaranteed to be defined
+       let res = await fetch("/api/auth/register-validate", {
+         method: "POST",
+         headers: {
+           "Content-type": "Application/json"
+         },
+         credentials:"include", 
+         body: JSON.stringify(formArg.data)
+       })
+ 
+       if (res.status != 200) {
+         throw new Error ()
+       }
+     }
+    }
+  )
   async function handleRegister(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     
-    setInputError (false)
     const formData = new FormData (event.currentTarget)
 
-
-    //Reject if any fields are undefined 
-    if (formData.get ("Name")== undefined || formData.get ("Email") == undefined || formData.get ("Password") == undefined ) {
-      setInputError (true )
-      return 
-    }
-    const formArg = schemaRegVal.safeParse({
-      name: formData.get("Name") as string,
-      email: formData.get("Email") as string,
-      password: formData.get("Password") as string,
-    })
-
-    if (formArg.success) {}
-    else {
-      console.log (formArg.error)
-      setInputError (true)
-      return 
-    }
-  
-    //Fields are guaranteed to be defined
-    let res = await fetch("/api/auth/register-validate", {
-      method: "POST",
-      headers: {
-        "Content-type": "Application/json"
-      },
-      credentials:"include", 
-      body: JSON.stringify(formArg.data)
-    })
-
-
-    if (res.status == 201) {
-      navigate ('/board'
-     
-      , {
-        state: {
-          curCursor: null,
-        }
-      })
-    }
-
+    mutate (formData)
   }
 
 
-  return (
-    createPortal (
-      <div className='fixed flex inset-0 items-center justify-center z-200   bg-black/50'>
-     
-      <div className='absolute flex  items-center justify-center text-black  '>
-        <form className="relative flex flex-col items-center justify-center  bg-white gap-1.5 p-10 md:p-20 rounded-xl" onSubmit={handleRegister}>
-          <button  type="button" className= "absolute  right-2 top-1 font-bold text-lg" onClick={ ()=> {handleExit()}}> X </button> 
-
-          <input  className= "bg-white rounded-md text-center h-[30px] w-[300px] " type="email" id="Email" name="Email" placeholder='Enter your email'></input>
-
-
-          <input className= "bg-white rounded-md text-center h-[30px] w-[300px]" type="text" id="Name" name= "Name" placeholder='Name' ></input>
-          <input className= "bg-white rounded-md text-center h-[30px] w-[300px]" type="password" id="Password" name= "Password" placeholder='Password'></input>
-         
-          <button className='bg-orange-600  text-white font-bold w-full flex justify-center items-center rounded-md' > Sign up </button>
-
-          {inputError && <div> Invalid values; ensure password is between 8 and 32 characters </div> }
-        </form>
-      </div>
-    </div>, 
-      document.body
-    )
+  return createPortal(
+    <SignLogComponent
+      handleSubmit={handleRegister}
+      handleExit={handleExit}
+  
+      isError={isError}
+  
+      text1Placeholder="Enter your email"
+      type1="email"
+      name1="Email"
+  
+      text2Placeholder="Name"
+      type2="text"
+      name2="Name"
+  
+      text3Placeholder="Password"
+      type3="password"
+      name3="Password"
+  
+      buttonText="Sign up"
+      textError="Email may belong to existing account; ensure password is between 8 and 32 characters. ."
+      isSuccess={isSuccess}
+      successMessage="Validate your email"
+      isLoading={isPending}
+    />,
+    document.body
   )
 }
 
 
 function ImagePanel() {
-  const [curImg, setCurImg] = useState(0)
+ 
   const navigate= useNavigate ()
-
-  function onNextImg() {
-    let newImg = (curImg + 1) % 3
-    setCurImg(newImg)
-  }
 
   return (
     <div className= "max-w-6xl m-auto grid grid-cols-[1fr_1fr] mt-10 px-10 py-15"> 
@@ -282,36 +256,21 @@ function ImagePanel() {
         <h3 className= "flex px-4 py-2 text-gray-600 text-lg text-extrabold  "> Track recruiter contacts, follow-ups, offers, applications, and interviews in a single place</h3>
       
         <div className=" px-4 py-2 grid grid-cols-[2fr_6fr] gap-2"> 
-          <button className="flex px-1 py-2 bg-orange-500 text-white text-xs items-center justify-center " onClick= {()=> { navigate ('register') } }>Start tracking</button> 
-          <div className= "flex flex-row align-start "> 
+          <button className="flex px-1 py-2 bg-orange-500 text-white text-xs items-center justify-center hover:bg-orange-600" onClick= {()=> { navigate ('register') } }>Start tracking</button> 
+          <div className= "flex flex-row align-start hover:bg-blue-200"> 
             <button onClick= { ()=> {navigate ('register') }}> See how it works &rarr;</button> 
           </div>
          
         </div>
       </div>
 
-      <div className= "flex flex-row justify-center items-center hidden md:flex">
-        <div key={panelImagesObj[1].src[1]} >
-          <img src={panelImagesObj[1].src[2]}></img>
+      <div className= "flex flex-row justify-center items-center hidden md:flex ">
+        <div  key={panelImagesObj[0].src[1]} >
+          <img className= "rounded-lg" src={panelImagesObj[0].src[2]}></img>
         </div>
       </div>
     </div> 
     
-   /* */
-   /* <section className="relative h-[420px] w-full md:h-[720px] max-w-[1100px] mx-auto ">
-    {panelImages.map((item) => {
-      let opt = (item.src[0] == curImg) ? "opacity-100" : "opacity-0"
-      let classStr = "absolute h-full w-full inset-0 object-cover " + opt + " transition-opacity duration-700 delay-300"
-
-      return (
-        <div key={item.src[1]} className={classStr}>
-          <img src={item.src[2]} className={classStr}></img>
-        </div>
-      )
-    })}
-
-    <button className="absolute bg-black text-white bottom-5 right-5 px-5 py-5" onClick={() => { onNextImg() }}> &gt;</button>
-  </section>  */
   )
 }
 
@@ -435,9 +394,9 @@ function Features() {
 
       <section className=" bg-blue-200 px-5 py-6 ">
 
-        <div className= "grid grid-row [1fr_1fr] m-auto max-w-6xl gap-4 px-10 py-10"> 
-          <div className= "flex justify-center items-center">
-
+        <div className= "grid grid-row [1fr_1fr] m-auto max-w-6xl gap-4 px-10 py-10 "> 
+         
+          <div className= "flex justify-center items-center hover:bg-blue-100">
             <div className= "grid grid-cols-[1fr]"> 
               <div className="flex flex-col gap-4 "> 
                 <div className="text-sm text-red-600  font-bold ">Everything in one place</div> 
@@ -446,12 +405,11 @@ function Features() {
                 <div className="text-bold text-gray-500">Instead of scatterred notes, eails, and spreadsheets, Joba gives each opportunity 
                 a clear place to live  </div> 
               </div> 
-    
             </div> 
           </div>
 
-          <div className="flex flex-col md:flex-row  items-start justify-center gap-10 rounded  py-10 text-black m-auto max-w-6xl">
-            <div className="bg-white text-blac px-8 py-8 flex- flex-col rounded-lg "> 
+          <div className="flex flex-col md:flex-row  items-start justify-center gap-10 rounded  py-10 text-black m-auto max-w-6xl ">
+            <div className="bg-white text-blac px-8 py-8 flex- flex-col rounded-lg  hover:bg-blue-100"> 
                 <div className="rounded-full px-4 py-4 w-1 h-1 bg-red-200 font-bold text-red-500 flex justify-center items-center " > 1 </div> 
                 <h3 className="mb-3 text-xl font-extrabold py-5 ">
                   Application tracking 
@@ -461,7 +419,9 @@ function Features() {
                 </p>
             </div> 
     
-            <div className="bg-white text-blac px-8 py-8 flex- flex-col rounded-lg "> 
+
+
+            <div className="bg-white text-blac px-8 py-8 flex- flex-col rounded-lg  hover:bg-blue-100"> 
                 <div className="rounded-full px-4 py-4 w-1 h-1 bg-red-200 font-bold text-red-500 flex justify-center items-center " > 2 </div> 
                 <h3 className="mb-3 text-xl font-extrabold py-5 ">
                   Interview planning
@@ -473,7 +433,7 @@ function Features() {
 
 
 
-            <div className="bg-white text-blac px-8 py-8 flex- flex-col rounded-lg "> 
+            <div className="bg-white text-blac px-8 py-8 flex- flex-col rounded-lg hover:bg-blue-100 "> 
                 <div className="rounded-full px-4 py-4 w-1 h-1 bg-red-200 font-bold text-red-500 flex justify-center items-center " > 3 </div> 
                 <h3 className="mb-3 text-xl font-extrabold py-5 ">
                   Job-search insights 
@@ -571,10 +531,12 @@ function Footer() {
 
       <footer className="text-white bg-black h-[50px] px-20 py-20">
        <div className= "m-auto flex items-center justify-center"> 
-          <div className= "flex items-center justify-center"> 
+          <div className= "flex items-center justify-center "> 
             <ul>
-              <li>Utuado, Puerto Rico</li>
-              <li>Contact us through github</li>
+              <li >Utuado, Puerto Rico</li>
+              <li className= "hover:bg-gray-600"> 
+                <a href ="https://github.com/computarisis/joba-repo" target="_blank" rel="noopener noreferrer"> Contact us in Github</a>
+              </li>
             </ul>
           </div>
        </div>
@@ -586,6 +548,7 @@ function Footer() {
 
 function ValidateEmailTab () {
 
+  const navigate= useNavigate ()
   //Extract from url fragment  https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
   const tokenVal= new URLSearchParams (window.location.hash.substring (1)).get ('token')
   type resType ={
@@ -646,13 +609,22 @@ function ValidateEmailTab () {
     }, []
   )
 
-  return (
-    <> 
-       <h1 className="text-6xl font-extrabold"> Registrate page... Confirming email...</h1>
-       {isPending && <div className="text-6xl font-extrabold">Loading...</div>}
-       {isError && <div className="text-6xl font-extrabold">Invalid token...</div>}
-       {isSuccess && <div >Confirmed. Proceed to the main page</div>}
-    </> 
+  const handleExit = ()=> {
+    navigate ('/')
+  }
+
+  return createPortal(
+    <SignLogComponent
+      handleExit={handleExit}
+      isLoading={isPending}
+      isSuccess={isSuccess}
+      isError={isError}
+      textError="Invalid or consumed token"
+      successMessage="Registration successful"
+      redirectToLogIn= {true}
+      
+    />,
+    document.body
   )
 }
 
@@ -663,25 +635,30 @@ function ChangePassTab () {
     token: string , 
     newPassword: string
   }
+  type resetArg = {
+    reset: resetType, 
+    pass2: string
+  }
   //Extract the token from the url 
   const resetToken= new URLSearchParams (window.location.hash.substring(1)). get ('token') as string
   const navigate= useNavigate ()
   
-  //Combined use for server call and local check 
-  const [isError, setIsError] = useState (false)
+
 
 
   
   
 
-  const {isPending, mutate , isSuccess} = useMutation (
+  const {isPending, mutate , isSuccess, isError} = useMutation (
     {
-      mutationFn: async (resetObj: resetType)=> {
+      mutationFn: async (resetObj: resetArg )=> {
 
-      
-        const parsedObj= schemaResetPassword.safeParse (resetObj) 
+        if ( resetObj.reset.newPassword!= resetObj.pass2 || typeof resetObj.reset.newPassword !== "string") {
+          throw new Error ()
+        }
+
+        const parsedObj= schemaResetPassword.safeParse (resetObj.reset) 
         if (!parsedObj.success) {
-          setIsError (true)
           throw new Error ()
           
         }
@@ -692,14 +669,12 @@ function ChangePassTab () {
             headers: {
               "Content-type": "Application/json"
             }, 
-            body: JSON.stringify (resetObj)
+            body: JSON.stringify (resetObj.reset)
          }
         )
 
         console.log ('status:', res.status)
         if (res.status!= 200) {
-          
-          setIsError (true)
           throw new Error ()
         }
         
@@ -717,23 +692,29 @@ function ChangePassTab () {
     const pass2= formData.get ('password2') as string 
 
    
-    if ( pass1!= pass2 || typeof pass1 !== "string") {
-      setIsError (true)
-      return 
-    }
-    else   {
-      const resetObj= {
+
+    const resetObj= {
+      reset: {
         token: resetToken , 
         newPassword: pass1
-      }
-      mutate (resetObj)
+      }, 
+      pass2: pass2 
     }
+    mutate (resetObj)
+    
   }
+
+  const handleExit = ()=> {
+    navigate ('/')
+  }
+
+  
 
   return (
     createPortal(
       <SignLogComponent
         handleSubmit={handleSubmit}
+        handleExit= {handleExit}
         isLoading={isPending}
         isError={isError}
         isSuccess = {isSuccess}
@@ -745,6 +726,8 @@ function ChangePassTab () {
         type2="password"
         name1="password1"
         name2="password2"
+        successMessage="Password changed successfully"
+        redirectToLogIn= {true}
       />,
       document.body
     )
@@ -834,21 +817,3 @@ function Home() {
 export default App
 
 
-
-
-/* 
-
-<section className="relative h-[420px] w-full md:h-[720px] max-w-[1100px] mx-auto ">
-    {panelImages.map((item) => {
-      let opt = (item.src[0] == curImg) ? "opacity-100" : "opacity-0"
-      let classStr = "absolute h-full w-full inset-0 object-cover " + opt + " transition-opacity duration-700 delay-300"
-
-      return (
-        <div key={item.src[1]} className={classStr}>
-          <img src={item.src[2]} className={classStr}></img>
-        </div>
-      )
-    })}
-
-    <button className="absolute bg-black text-white bottom-5 right-5 px-5 py-5" onClick={() => { onNextImg() }}> &gt;</button>
-  </section>  */
