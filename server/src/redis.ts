@@ -12,7 +12,7 @@ export interface InvalidateRecord extends Entity {
 }
 
 export interface RegValRecord extends Entity {
-    name: string | undefined ,
+    name: string | undefined |null ,
     email: string, 
     passwordHash: string, 
     tokenHash: string

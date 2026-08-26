@@ -313,7 +313,7 @@ authRouter.post ('/api/auth/login', async  (req, res) => {
                 const jwtToken= jwt.sign (token, envConfig.jwtSignature, {expiresIn: '24hr'}) 
                 res.cookie (envConfig.cookieName,  jwtToken, cookieOptions)
 
-                const resultArg=   await  fetchDbPaylaod (result.rows[0].id , envConfig.defaultloginlim+1)
+                const resultArg=   await  fetchDbPaylaod (result.rows[0].id , envConfig.defaultloginPayloadSize+1)
 
                 res.status (200).json (
                 
@@ -555,6 +555,7 @@ authRouter.post ('/api/auth/reset-password', async (req, res)=> {
         keyVal = await recoveryCache.search().where ('tokenHash').equals(tokHash).returnFirst ()
         if (!keyVal) {
             await pgClient.query('ROLLBACK')
+            
             res.status (400).json ({error: "Invalid or expired reset token"})
             return 
         }
