@@ -1,17 +1,17 @@
 
 
 import './App.css'
-import {useCache, useController, useDLE, useQuery} from '@data-client/react'
+import {useController, useQuery} from '@data-client/react'
 import { All } from '@data-client/rest';
-
 import {useState, type SetStateAction, useEffect, useRef} from 'react'
 import { createPortal } from 'react-dom';
-import {type applicationType, Application, AppResourceCreate, AppResourceDelete, AppResourceUpdate, updatedCursor, AppResource, AppResourceReadPage, AppResourcePush}  from './query.tsx'
-import {useQueryClient, useMutation, QueryClient} from '@tanstack/react-query';
+import {type applicationType, Application, AppResourceDelete, AppResourceUpdate, updatedCursor, AppResourceReadPage, AppResourcePush}  from './query.tsx'
+import { useMutation} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import {EditAppComponent} from  './components.js'
 import {schemaPostApplication, schemaPatchApplication} from './schema.ts'
-import { DataListItemValue } from '@mantine/core';
+import {EditAppComponent} from  './Components.js'
+import { v4 as uuidv4 } from "uuid"
+
 
 
 const FETCH_SIZE= 10
@@ -143,7 +143,7 @@ const getApplicationKey= (app: Application) => {
     if (renderKeyMap.has (app) ) {
       return renderKeyMap.get (app)
     }
-    const id= crypto.randomUUID ()
+    const id= uuidv4()
     renderKeyMap.set ( app, id)
     return id 
   }
@@ -182,11 +182,11 @@ function AppListResponsive (  {data, loading}: {data: Application [] | undefined
       {loading && <div>Loading...</div>}
   
       {!loading && 
-        <div className= "  md:flex md:flex-wrap md:justify-center md:gap-4 md:max-w-[1100px] md:mx-auto "> {
+        <div  className= "  md:flex md:flex-wrap md:justify-center md:gap-4 md:max-w-[1100px] md:mx-auto "> {
           data?.map(
           (item: Application)=> {
             return (
-              <div className= "flex flex-col w-[300px] p-8 bg-white gap-2 mt-10 rounded-lg  hover:bg-gray-50">
+              <div key={getApplicationKey(item)} className= "flex flex-col w-[300px] p-8 bg-white gap-2 mt-10 rounded-lg  hover:bg-gray-50">
                 <div > 
                   <div className= "flex flex-col p-3">
                     <div className="font-bold text-lg">{item["company"]}  </div>
@@ -236,17 +236,18 @@ function AppListResponsive (  {data, loading}: {data: Application [] | undefined
 }
 
 
- 
 
 function OptTab  () {
 
   const controller= useController ()
   const [inputError, setInputError]= useState (false)
+
   
   //if paraCursor null, no more to show 
   const  onQuickAdd = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault ()
     setInputError (false) 
+  
 
     const createMutation= (objData: applicationType) => {
       controller.fetch (AppResourcePush, objData)
@@ -265,7 +266,9 @@ function OptTab  () {
     } as applicationType
 
     const parsedObj= schemaPostApplication.safeParse (objData)
-    if (parsedObj.success) {} 
+    if (parsedObj.success) {
+      event.currentTarget.reset ()
+    } 
     else {
       console.log (parsedObj.error)
       setInputError (true) 
