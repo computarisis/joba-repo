@@ -114,10 +114,10 @@ function DeleteBar ( {delFunc}: { delFunc: ()=> void })
   //On Yes, component is remounted 
   if (showConfirm) {
     return (
-      <> 
-        <button onClick= {delFunc}>Yes</button> 
-        <button onClick= { ()=> {setShowConfirm (false)}}>No</button>
-      </> 
+      <div className= "flex flex-row gap-4 "> 
+        <button className="text-gray-600" onClick= {delFunc}>Yes</button> 
+        <button className="text-gray-600"  onClick= { ()=> {setShowConfirm (false)}}>No</button>
+      </div> 
     )
   }
   return (
@@ -150,12 +150,24 @@ const getApplicationKey= (app: Application) => {
   return app.id 
 
 }
+const processRangeAux =( min: number|null, max: number|null ) =>{
 
+  if (! min || ! max) return 
 
-function AppList (  
-  {data, loading}: {data: Application [] | undefined, loading: boolean}
-) {
-  
+  let minAppx 
+  let maxAppx 
+
+  if (min< 1000) minAppx= min.toFixed (1)
+  else minAppx =  String ((min/1000).toFixed (1))+"k"
+  if (max<1000) maxAppx = max.toFixed (1)
+  else maxAppx = String ((max/1000).toFixed (1))+"k"
+
+  const str= minAppx +" - "+ maxAppx
+  return str 
+
+}
+
+function AppListResponsive (  {data, loading}: {data: Application [] | undefined, loading: boolean}) {
 
   const [editItem, setEditItem]= useState<applicationType|null>  (null)
   const controller= useController () ; 
@@ -165,53 +177,66 @@ function AppList (
     controller.fetch (AppResourceDelete, {id:objData.id})
   }
 
-  //TODO: Format: Date-Salary-  changing status format 
   return (
-    <> 
-  
+    <>
       {loading && <div>Loading...</div>}
-     <div className='max-w-4xl mx-auto flex flex-col mt-35 '>
-      {
-        !loading && data?.map ( 
-          (item: Application) => {
+  
+      {!loading && 
+        <div className= "  md:flex md:flex-wrap md:justify-center md:gap-4 md:max-w-[1100px] md:mx-auto "> {
+          data?.map(
+          (item: Application)=> {
             return (
-              <div className= "grid grid-cols-[3fr_2fr_1fr_1fr_4fr] max-w-4xl gap-2 bg-white mb-2.5 px-2.5 py-2.5 rounded font-sans items-center" key= {getApplicationKey (item) }> 
-                <div className="gap-1.5"> 
-                  <div className="font-bold text-lg">{item["company"]}  </div>
-                  <div> {item["role"]} </div>
-                  <div> {item["jobUrl"]} </div>
-                </div> 
+              <div className= "flex flex-col w-[300px] p-8 bg-white gap-2 mt-10 rounded-lg  hover:bg-gray-50">
+                <div > 
+                  <div className= "flex flex-col p-3">
+                    <div className="font-bold text-lg">{item["company"]}  </div>
+                    <div className= "text-gray-600" > {item["role"]} </div>
+                  </div>
+      
+                  <div className= "flex flex-row justify-between">
+                    <div className= "font-semibold">Status: </div>
+                    <div className= "text-gray-600">{item["status"]}</div>
+                  </div>
+      
+                  <div className= "flex flex-row justify-between">
+                    <div className= "font-semibold">Date: </div>
+                    <div className= "text-gray-600">{item["applicationDate"]?.slice (0, 10)}</div>
+                  </div>
+      
+                  <div className= "flex flex-row justify-between">
+                    <div className= "font-semibold" >Salary: </div>
+                    <div className= "text-gray-600"> {processRangeAux (item["salaryMin"], item["salaryMax"])} </div>
+                  </div>
+      
+                  <div className= "flex flex-row justify-between">
+                    <div  className= "font-semibold" >Website: </div>
+                    <div className= "text-gray-600"> {item["jobUrl"]}</div>
+                  </div>
 
-                <div className="flex flex-row gap-2 h-max w-max bg-green-100 rounded-2xl px-1 py-1"> {item["status"]} </div> 
+                  <div className= "flex flex-row   justify-end items-end p-3">
+                  <div className="flex flex-row gap-2 items-center justify-center"> 
+                    <DeleteBar delFunc= {()=> deleteMutation (item)}></DeleteBar>
+                    <button onClick={ ()=> setEditItem (item)}>Edit</button>
+                  </div> 
+                </div>
 
-                <div className="flex flex-row gap-2 h-max w-max"> {item["applicationDate"]?.slice (0, 10)}</div> 
-                
-                <div className="flex flex-row gap-2 h-max w-max"> {item["salaryMin"]}-{item["salaryMax"]}</div> 
 
-                <div className="flex flex-row gap-2 items-center justify-center"> 
-                  <DeleteBar delFunc= {()=> deleteMutation (item)}></DeleteBar>
-                  <button onClick={ ()=> setEditItem (item)}>Edit</button>
-                </div> 
-            </div> 
+                </div>
+
+                { 
+                  editItem &&  <EditModal itemEdit={editItem} setEditItem ={setEditItem} createFlag= {false} actionText= {"Edit"}></EditModal>
+                }
+              </div>
             )
-          }
-        )
+          })}
+          </div>
       }
-      { 
-        editItem &&  <EditModal itemEdit={editItem} setEditItem ={setEditItem} createFlag= {false} actionText= {"Edit"}></EditModal>
-      }
-
-     </div>
-    </> 
-  ) 
-}//SEE: Stretching on DeleteBar div without items-center
+    </>
+  )
+}
 
 
-
-
-
-
-
+ 
 
 function OptTab  () {
 
@@ -390,10 +415,10 @@ function OptTab  () {
       <> 
      
       <header> 
-      <div className= "flex flex-row justify-between"> 
+      <div className= "flex flex-row justify-between items-center  m-auto m-full md: max-w-6xl p-5"> 
         <div className= "px-3 py-3 text-2xl font-bold"> Joba</div>
-        <button className="px-5 py-5 justify-end items-end" onClick= {()=> {handleLogout()}}> Log out </button> 
-        <div> {isPending && <>Exiting...  </> } </div> 
+        <button className="flex flex-row justify-end items-end rounded-xl p-2 border-1 font-extrabold text-black hover:bg-blue-200" onClick= {()=> {handleLogout()}}> Log out </button> 
+          {isPending && <>Exiting...  </> } 
       </div>
       </header> 
       
@@ -418,7 +443,7 @@ function OptTab  () {
 
 
       {/* Use mx-auto */}
-      <section className="bg-white px-5 py-10 max-w-4xl mx-auto"> 
+      <section className="bg-blue-50 px-5 py-10 w-full m-auto max-w-4xl mx-auto hover:bg-blue-100"> 
         <div className="flex flex-col"> 
         
         <h3 className="px-2 py-2 font-bold">Quick add</h3> 
@@ -450,15 +475,26 @@ function OptTab  () {
           and one that causes re-rendering to ensure the buttons appear again after the load is incomplete
       
       */ }
-      <AppList data={cacheStoreSliced} loading={false}></AppList>
-      <div className='flex flex-row mt-15 justify-center items-center gap-3 '> 
-         
+      <div  className= "flex flex-col justify-center items-center md:mt-20"> 
+        <AppListResponsive data={cacheStoreSliced} loading={false}></AppListResponsive>
+      </div>
+    
+
+     
+      <div className='flex flex-col mt-15 justify-center items-center gap-3 p-10 '> 
+           
+          <div> 
+            <h3 className= "font-extrabold"> Page {curPage}</h3> 
+          </div> 
      
            {
             !loadingState.current && !loading && 
-            <div> 
-              <button onClick={ () => { onNextPage(Math.max ( curPage-1, 1));  setCurPage (Math.max ( curPage-1, 1)); } }> back  </button> 
-              <button onClick= {()=> {  onNextPage (curPage+1);                setCurPage (curPage+1)}}> next </button>
+            <div className= "flex flex-row gap-2 "> 
+              <button className="flex w-fit bg-orange-400 hover:bg-orange-500 p-1 text-white rounded-lg justify-center items-center font-extrabold text-8xl" onClick={ () => { onNextPage(Math.max ( curPage-1, 1));  setCurPage (Math.max ( curPage-1, 1)); } }> 
+                &lt; back
+              </button> 
+              <button className="flex w-fit bg-orange-400 hover:bg-orange-500  p-1 text-white rounded-lg  justify-center items-center font-extrabold text-8xl" onClick= {()=> {  onNextPage (curPage+1);               
+                 setCurPage (curPage+1)}}> next &gt; </button>
             </div> 
            }
 
@@ -468,13 +504,11 @@ function OptTab  () {
            }
            
       
-          <div> 
-            <h3> {curPage}</h3> 
-          </div> 
+         
 
           <div>
-            <label> Entries per page</label>
-            <select onChange= { (e) => {setLimitPerPage ( Number (e.target.value)) }} disabled= { !(!loadingState.current && !loading)}>
+            <label className= "font-semibold"> Show: </label>
+            <select className="border-2 hover:bg-blue-200" onChange= { (e) => {setLimitPerPage ( Number (e.target.value)) }} disabled= { !(!loadingState.current && !loading)}>
               <option value="5">5</option> 
               <option value="15">15</option>
               <option value="25">25</option>
