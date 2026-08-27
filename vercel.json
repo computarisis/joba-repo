@@ -1,0 +1,22 @@
+{
+    "services": {
+      "web": {
+        "root": "client",
+        "framework": "vite"
+      },
+      "api": {
+        "root": "server",
+        "entrypoint": "src/index.ts"
+      }
+    },
+    "rewrites": [
+      {
+        "source": "/api/(.*)",
+        "destination": { "service": "api" }
+      },
+      {
+        "source": "/(.*)",
+        "destination": { "service": "web" }
+      }
+    ]
+  }
