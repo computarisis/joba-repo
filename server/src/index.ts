@@ -1,4 +1,4 @@
-import "dotenv/config";
+
 import express, {
   type ErrorRequestHandler,  //Used for error handler middleware
   type RequestHandler
