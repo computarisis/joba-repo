@@ -104,7 +104,7 @@ export const redisClient= createClient (
       url: envConfig.redisUrl
   }
 )
-await redisClient.connect ()
+
 
 //https://nodemailer.com/
 
@@ -119,21 +119,13 @@ export const transporter= nodemailer.createTransport ({
 })
 
 
-try {
-  await transporter.verify ()
-  console.log ("Transporter is verified")
-}
-catch (err) {
-  console.log ("Transporter error ", err )
-}
+
 
 export const recoveryCache= new Repository (recoverySchema, redisClient)
 export const regCache= new Repository (regValSchema, redisClient)
 export const invalidateCache= new Repository (invalidateSchema, redisClient)
 
-await recoveryCache.createIndex ()
-await regCache.createIndex () 
-await invalidateCache.createIndex ()
+
 
 
 /*
@@ -267,7 +259,7 @@ async function migrate  () {
   )
 }
 
-await migrate ()
+
 
 
 
@@ -286,5 +278,26 @@ let errorHandler: ErrorRequestHandler = (err, req, res, next )=> {
 app.use (errorHandler )
 
 
-//Start server 
-app.listen (Number (envConfig.port), "0.0.0.0", ()=> {console.log ("Starting server ... ")})
+
+
+async function start () {
+  await redisClient.connect ()
+  try {
+    await transporter.verify ()
+    console.log ("Transporter is verified")
+  }
+  catch (err) {
+    console.log ("Transporter error ", err )
+  }
+
+  await recoveryCache.createIndex ()
+  await regCache.createIndex () 
+  await invalidateCache.createIndex ()
+  await migrate ()
+
+  //Start server 
+  app.listen (Number (envConfig.port), "0.0.0.0", ()=> {console.log ("Starting server ... ")})
+}
+
+
+start ()
