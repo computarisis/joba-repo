@@ -9,7 +9,7 @@ import {type applicationType, Application, AppResourceDelete, AppResourceUpdate,
 import { useMutation} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {schemaPostApplication, schemaPatchApplication} from './schema.ts'
-import {EditAppComponent} from  './Components.js'
+import {EditAppComponent} from './components.tsx'
 import { v4 as uuidv4 } from "uuid"
 
 

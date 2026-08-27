@@ -6,7 +6,7 @@ import {useNavigate} from 'react-router-dom'
 import {useMutation} from '@tanstack/react-query'; 
 import {AppResourceLogin} from './query.tsx'
 import {useController} from '@data-client/react'
-import {SignLogComponent} from './Components.tsx'
+import {SignLogComponent} from './components.tsx'
 import {schemaLogIn , schemaRegVal, schemaResetPassword, schemaReg} from './schema.ts'
 
 import './App.css'
