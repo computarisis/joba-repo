@@ -1,0 +1,41 @@
+#Note: Be sure to set the environment variables before composing 
+name: joba
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: joba-db
+    environment:
+      POSTGRES_USER: ${PG_USER_ARG:? POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${PG_PASS_ARG:? POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${PG_NAME_ARG:? POSTGRES_DB is required}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - joba_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"] # $$ denotes the variables inside the container environment
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis/redis-stack-server:7.4.0-v8
+    container_name: joba-redis
+    environment:
+      REDIS_ARGS: "--requirepass ${REDIS_PASS_ARG:? REDIS_PASS_ARG is required} --appendonly yes"
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASS_ARG} ping | grep -q PONG"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  joba_postgres_data:
+  redis-data:
+    driver: local

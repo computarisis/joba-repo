@@ -9,7 +9,8 @@ import {schemaRegVal, schemaReg, schemaPostApplication, schemaPatchApplication, 
     applicationRow, cursorObj, applicationQuery, schemaCursorType, 
     schemaforgotPassword, schemaResetVerify, schemaResetPassword
 } from './schema.js'
-import {invalidateCache, pool} from './index.js'
+import {invalidateCache, pool, envConfig} from './index.js'
+
 
 /*
     This contains contants, types, helpers for business logic implemented in the routes 
@@ -42,8 +43,8 @@ declare global {
 export const cookieOptions = {
     maxAge: 900000000, //we use Redis to cache invalid tokens for this TTL max 
     httpOnly: true,  //mitigates stealing via XSS
-    secure: true, //forces https
-    sameSite: 'strict', //mitigates CSFR
+    secure: process.env.NODE_ENV==="Production" , //forces https   
+    sameSite: 'lax', //mitigates CSFR
    
 } as const 
 

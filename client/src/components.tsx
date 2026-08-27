@@ -1,7 +1,11 @@
-import type { SubmitEventHandler } from "react"
 
+import { PasswordInput } from '@mantine/core';
+import type { FormEventHandler, MouseEventHandler } from "react";
+import { useNavigate } from "react-router-dom";
+import type { Dispatch, SetStateAction } from "react";
+import  type { applicationType } from "./query";
 
-
+//TODO: Not currently imported, but consider using it for modularity (technical debt)
 export function ButtonComponent ( {text} : {
     text: string 
 }) {
@@ -14,9 +18,6 @@ export function ButtonComponent ( {text} : {
 
 
 
-import type { FormEventHandler, MouseEventHandler } from "react";
-import { useNavigate } from "react-router-dom";
-
 export function SignLogComponent({
     handleSubmit, 
     handleForgotPass, 
@@ -27,80 +28,157 @@ export function SignLogComponent({
     textOpt, 
     text1Placeholder, 
     text2Placeholder, 
+    text3Placeholder,
     buttonText, 
     textError, 
     type1, 
     type2, 
+    type3, 
     name1,
     name2, 
-    successMessage
+    name3,
+    successMessage, 
+    redirectToLogIn
   }: 
 
-    {handleSubmit: FormEventHandler<HTMLFormElement>; 
+    {handleSubmit?: FormEventHandler<HTMLFormElement>; 
         handleForgotPass?: MouseEventHandler<HTMLButtonElement> ; 
         handleExit?: MouseEventHandler<HTMLButtonElement> ; 
         isLoading?: boolean; 
         isError?: boolean; 
         isSuccess?: boolean ; 
         textOpt?: string; 
-        text1Placeholder: string; 
-        text2Placeholder: string; 
-        buttonText: string; 
+        text1Placeholder?: string; 
+        text2Placeholder?: string; 
+        text3Placeholder?: string; 
+        buttonText?: string; 
         textError?: string, 
-        type1: string,
+        type1?: string,
         type2?: string,
-        name1: string,
+        type3?: string,
+        name1?: string,
         name2?: string,
+        name3?: string,
         successMessage?: string
+        redirectToLogIn?: boolean
         
     }) {
 
         const navigator= useNavigate ()
-    
+
+   
+        //Password button is rendered using mantine ; we break down case by case 
         return (
       <div className="fixed inset-0 z-200 flex items-center justify-center bg-black/50">
         <div className="absolute flex items-center justify-center text-black">
           <form className="relative flex flex-col items-center justify-center gap-1.5 rounded-xl bg-white p-10 md:p-20" onSubmit={handleSubmit}>
             
-            {handleExit &&<button type="button" className="absolute right-2 top-1 text-lg font-bold" onClick={handleExit}>X </button>  }
+            {handleExit &&<button type="button" className="absolute right-2 top-1 text-7xl font-bold" onClick={handleExit}>X </button>  }
   
-  
-            <input className="h-[30px] w-[300px] rounded-md bg-white text-center" type={type1} id={name1} name={name1}placeholder= {text1Placeholder} />
-            {type2 && <input className="h-[30px] w-[300px] rounded-md bg-white text-center" type={type2} id={name2} name={name2} placeholder= {text2Placeholder} />}
-  
-            <button type="submit" className="mt-5 flex h-[30px] w-[150px] items-center justify-center rounded-md bg-black p-2 text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={isLoading}>
-               {buttonText}
-            </button>
-  
+           
+            {
+              !isSuccess && (
+                <>
+                     <div className= "flex flex-col gap-3 w-[300px]">
+                      {type1 && type1!="password" &&  <input className="py-1 px-15 rounded-md bg-white text-center border-2 outline-none focus:ring-3 focus:border-orange-500 focus:ring-orange-500"
+                       type={type1} id={name1} name={name1} placeholder= {text1Placeholder}/>}
+                      {type2 && type2!="password" &&  <input className="py-1 px-15 rounded-md bg-white text-center border-2 outline-none focus:ring-3 focus:border-orange-500 focus:ring-orange-500 " type={type2} id={name2} name={name2} placeholder= {text2Placeholder} />}
+                      {type3 && type3!= "password" && <input className="py-1 px-15 rounded-md bg-white text-center border-2 outline-none focus:ring-3 focus:border-orange-500 focus:ring-orange-500 " type={type3} id={name3} name={name3} placeholder= {text3Placeholder} />}
+                     
+                      {type1 && type1=="password" && 
+                        <PasswordInput  id={name1} name={name1} placeholder= {text1Placeholder}
+                          classNames= {
+                            {
+                              input:
+                              "w-full"+
+                              "rounded-md bg-white border-2 border-black outline-none " +
+                              "focus-within:ring-3 focus-within:border-orange-500 focus-within:ring-orange-500",
+                      
+                              innerInput:
+                                "py-1 px-15 text-center bg-transparent"
+                            }
+                          }
+                        />
+
+                      }
+                      
+                      {type2 && type2=="password" && <PasswordInput  id={name2} name={name2} placeholder= {text2Placeholder} 
+                        classNames= {
+                          {
+                            input:
+                            "w-full"+
+                            "rounded-md bg-white border-2 border-black outline-none " +
+                            "focus-within:ring-3 focus-within:border-orange-500 focus-within:ring-orange-500",
+                    
+                            innerInput:
+                              "py-1 px-15 text-center bg-transparent"
+                          }
+                        }
+                      />
+                      
+                      }
+                      {type3 && type3=="password" && <PasswordInput  id={name3} name={name3} placeholder= {text3Placeholder}
+                        classNames= {
+                          {
+                            input:
+                            "w-full"+
+                            "rounded-md bg-white border-2 border-black outline-none " +
+                            "focus-within:ring-3 focus-within:border-orange-500 focus-within:ring-orange-500",
+                    
+                            innerInput:
+                              "py-1 px-15 text-center bg-transparent"
+                          }
+                        }
+                      />
+                      
+                     }
+
+                    </div>
+                    {buttonText&& <button type="submit" className="mt-5 flex py-1 px-15  items-center justify-center font-extrabold rounded-md bg-black p-2 hover:bg-orange-500 text-white disabled:cursor-not-allowed disabled:opacity-50" disabled={isLoading}>
+                      {buttonText}
+                    </button>
+                    }
+                </>
+              )
+            }
+           
+
+
             {isError && (
               <div className="text-sm text-red-500">
                  {textError}
               </div>
             )}
   
-            {isLoading && (
-              <svg className="h-10 w-10 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-            )}
+            {isLoading && <div> Loading ...</div>}
 
-            {isSuccess && <> {successMessage} <button onClick={ ()=> { navigator ('/login') }}> Click here to log in </button></>  }
-  
+            {isSuccess  && !redirectToLogIn &&
+              <> 
+                <div className="p-10 font-semibold text-xl"> 
+                  {successMessage} 
+                </div>
+              </>
+            }
+
+            {isSuccess && redirectToLogIn && 
+              <> 
+                <div  className="p-10 font-semibold text-xl"> 
+                  {successMessage} 
+                </div>
+                <button onClick={ ()=> { navigator ('/login') }}> Click here to log in </button>
+              </>  
+            }
+
             {textOpt&& <button type="button" className="mt-2 text-sm underline" onClick={handleForgotPass}>  {textOpt} </button>}
   
           </form>
         </div>
       </div>
     );
-  }
-//TODO sign up, log in should have their own routes 
+  } 
 
 
 
-
-import type { Dispatch, SetStateAction } from "react";
-import  type { applicationType } from "./query";
 
 export function EditAppComponent({
     onUpdate,
@@ -121,9 +199,9 @@ export function EditAppComponent({
     //setInputError: (value: null) => void 
   }) {
 
-  return (
-    <div className="absolute flex max-w-2xl mx-auto inset-0 z-100">
-      <div className="relative flex max-w-2xl mx-auto h-fit z-100 bg-white text-black rounded-xl px-10 py-10 gap-10">
+  return ( //max-w-2xl
+    <div className="fixed flex w-full  mx-auto inset-0  z-100 bg-black/30  p-8 ">
+      <div className=" flex w-full max-w-lg center-items justify-center  mx-auto h-fit z-100 bg-white  text-black  rounded-xl px-10 py-10 gap-10">
         <form className="flex flex-col gap-4" onSubmit={onUpdate}>
 
           <div className="flex flex-col">
@@ -280,7 +358,7 @@ export function EditAppComponent({
             </button>
 
             <button type="submit" className="bg-orange-500 font-semibold text-xs text-white rounded border border-orange-600 hover:bg-orange-600 px-3 py-1.5">
-              {actionText}
+              Save
             </button>
 
             {inputError && <div> Invalid input; ensure values are correct  </div> }

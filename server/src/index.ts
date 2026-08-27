@@ -30,11 +30,12 @@ type configObj = {
   appVersion: string, 
   port : string, 
   dbUrl : string,
-  defaultloginlim: number ,
+  defaultloginPayloadSize: number ,
   redisUrl: string, 
   mailSecret: string , 
   mailUser: string, 
   mailHost: string
+  systemEnv: string
 
 }
 if (! process.env.COOKIE_NAME  ) {
@@ -58,6 +59,24 @@ if (! process.env.PORT) {
 if (! process.env.DATABASE_URL) {
   throw new Error ("Env variable missing")
 }
+if (! process.env.DEFAULT_lOGIN_PAYLOAD_SIZE) {
+  throw new Error ("Env variable missing")
+}
+if (! process.env.REDIS_URL) {
+  throw new Error ("Env variable missing")
+
+}
+if (! process.env.PASS_SECRET) {
+  throw new Error ("Env variable missing")
+}
+if (! process.env.MAIL_USER) {
+  throw new Error ("Env variable missing")
+}
+if (! process.env.MAIL_HOST) {
+  throw new Error ("Env variable missing")
+}if (! process.env.NODE_ENV) {
+  throw new Error ("Env variable missing")
+}
 
 export const envConfig= {
   cookieName: process.env.COOKIE_NAME, 
@@ -67,11 +86,13 @@ export const envConfig= {
   appVersion: process.env.APP_VERSION, 
   port: process.env.PORT, 
   dbUrl: process.env.DATABASE_URL,
-  defaultloginlim: Number (process.env.DEFAULT_lOGINLIMIT), 
+  defaultloginPayloadSize: Number (process.env.DEFAULT_lOGIN_PAYLOAD_SIZE), 
   redisUrl: process.env.REDIS_URL,
   mailSecret: process.env.PASS_SECRET,
   mailUser: process.env.MAIL_USER, 
-  mailHost: process.env.MAIL_HOST
+  mailHost: process.env.MAIL_HOST,
+  systemEnv: process.env.NODE_ENV
+
 } as configObj
 
 
@@ -90,7 +111,7 @@ await redisClient.connect ()
 export const transporter= nodemailer.createTransport ({
   host: envConfig.mailHost,
   port: 587, 
-  secure: false, 
+  secure: false,
   auth: {
     user: envConfig.mailUser, 
     pass: envConfig.mailSecret
