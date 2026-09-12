@@ -21,16 +21,10 @@ type configObj = {
   if (! process.env.JWT_SECRET) {
     throw new Error ("Env variable missing")
   }
-  if (! process.env.FRONTEND_ORIGIN) {
-    throw new Error ("Env variable missing")
-  }
   if (! process.env.SALT_ROUNDS) {
     throw new Error ("Env variable missing")
   }
   if (! process.env.APP_VERSION) {
-    throw new Error ("Env variable missing")
-  }
-  if (! process.env.PORT) {
     throw new Error ("Env variable missing")
   }
   if (! process.env.DATABASE_URL) {
