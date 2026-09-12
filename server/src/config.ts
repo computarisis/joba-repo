@@ -58,7 +58,9 @@ type configObj = {
   export const envConfig= {
     cookieName: process.env.COOKIE_NAME, 
     jwtSignature: process.env.JWT_SECRET, 
-    frontendOrigin: process.env.FRONTEND_ORIGIN, 
+    frontendOrigin: (process.env.VERCEL_PROJECT_PRODUCTION_URL ? 
+        `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.FRONTEND_ORIGIN
+    ),
     saltRounds: process.env.SALT_ROUNDS, 
     appVersion: process.env.APP_VERSION, 
     port: process.env.PORT, 
