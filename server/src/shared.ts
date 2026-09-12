@@ -9,8 +9,9 @@ import {schemaRegVal, schemaReg, schemaPostApplication, schemaPatchApplication, 
     applicationRow, cursorObj, applicationQuery, schemaCursorType, 
     schemaforgotPassword, schemaResetVerify, schemaResetPassword
 } from './schema.js'
-import {invalidateCache, pool, envConfig} from './index.js'
-
+import {invalidateCache} from './redis.js'
+import {envConfig} from './config.js'
+import {pool} from './migrate.js'
 
 /*
     This contains contants, types, helpers for business logic implemented in the routes 

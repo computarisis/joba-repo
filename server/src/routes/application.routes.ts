@@ -11,10 +11,10 @@ import {schemaRegVal, schemaReg, schemaPostApplication, schemaPatchApplication, 
     applicationRow, cursorObj, applicationQuery, schemaCursorType, 
     schemaforgotPassword, schemaResetVerify, schemaResetPassword
 } from '../schema.js'
-import {invalidateCache, pool} from '../index.js'
+import {pool} from '../migrate.js'
 import bcrypt from "bcryptjs";
 
-import { envConfig } from '../index.js'
+import { envConfig } from '../config.js'
 import {
     type RequestHandler
 } from "express";
@@ -22,7 +22,8 @@ import { z } from 'zod';
 import { setDefaultResultOrder } from 'node:dns'
 
 import { recoverySchema, regValSchema , invalidateSchema,  RecoveryRecord, RegValRecord } from '../redis.js'
-import {recoveryCache, regCache, transporter} from '../index.js'
+import {recoveryCache, regCache, invalidateCache} from '../redis.js'
+import { transporter } from '../mailer.js'
 import {EntityId} from 'redis-om'
 import crypto from 'crypto'
 
