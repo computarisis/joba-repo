@@ -1,0 +1,8 @@
+{
+    "name": "joba",
+    "private": true,
+    "workspaces": [
+      "client",
+      "server"
+    ]
+  }
