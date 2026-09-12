@@ -76,7 +76,7 @@ export function SignLogComponent({
             {handleExit &&<button type="button" className="absolute right-2 top-1 text-7xl font-bold" onClick={handleExit}>X </button>  }
   
            
-            {
+            { //We made tailwind styling overrides mantine's for the password input elements
               !isSuccess && (
                 <>
                      <div className= "flex flex-col gap-3 w-[300px]">
@@ -90,8 +90,8 @@ export function SignLogComponent({
                           classNames= {
                             {
                               input:
-                              "w-full"+
-                              "rounded-md bg-white border-2 border-black outline-none " +
+                              "w-full "+
+                              "rounded-md bg-white !border-2 !border-black outline-none " +
                               "focus-within:ring-3 focus-within:border-orange-500 focus-within:ring-orange-500",
                       
                               innerInput:
@@ -106,8 +106,8 @@ export function SignLogComponent({
                         classNames= {
                           {
                             input:
-                            "w-full"+
-                            "rounded-md bg-white border-2 border-black outline-none " +
+                            "w-full "+
+                            "rounded-md bg-white !border-2 !border-black outline-none " +
                             "focus-within:ring-3 focus-within:border-orange-500 focus-within:ring-orange-500",
                     
                             innerInput:
@@ -121,8 +121,8 @@ export function SignLogComponent({
                         classNames= {
                           {
                             input:
-                            "w-full"+
-                            "rounded-md bg-white border-2 border-black outline-none " +
+                            "w-full "+
+                            "rounded-md bg-white !border-2 !border-black outline-none " +
                             "focus-within:ring-3 focus-within:border-orange-500 focus-within:ring-orange-500",
                     
                             innerInput:
