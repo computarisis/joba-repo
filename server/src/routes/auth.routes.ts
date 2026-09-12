@@ -135,7 +135,10 @@ authRouter.post ('/api/auth/register-validate' , async (req, res)=> {
             if (!entry[EntityId]) throw new Error ()
             await regCache.expire (entry[EntityId], 1440)
 
-            const url = `${envConfig.frontendOrigin}/validate-email#token=${encodeURIComponent(token)}`
+            const frontend= (process.env.VERCEL_PROJECT_PRODUCTION_URL ? 
+                `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.FRONTEND_ORIGIN
+            )
+            const url = `${frontend}/validate-email#token=${encodeURIComponent(token)}`
             const subjectText= 'Registration'
             await transporter.sendMail (
                 {
@@ -411,7 +414,10 @@ authRouter.post ('/api/auth/forgot-password', async (req, res)=> {
         await recoveryCache.expire (savedPair[EntityId]!, 5000)
 
         //Send email using nodemail 
-        const url = `${envConfig.frontendOrigin}/change-password#token=${encodeURIComponent(token)}`
+        const frontend= (process.env.VERCEL_PROJECT_PRODUCTION_URL ? 
+            `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : process.env.FRONTEND_ORIGIN
+        )
+        const url = `${frontend}/change-password#token=${encodeURIComponent(token)}`
         console.log ("Sending recovery to ", url )
 
         await transporter.sendMail (
