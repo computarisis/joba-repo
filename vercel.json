@@ -2,7 +2,13 @@
   "services": {
     "web": {
       "root": "client",
-      "framework": "vite"
+      "framework": "vite",
+      "rewrites": [
+        {
+          "source": "/(.*)",
+          "destination": "/index.html"
+        }
+      ]
     },
     "api": {
       "root": "server",
@@ -12,37 +18,15 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": { "service": "api" }
+      "destination": {
+        "service": "api"
+      }
     },
-
-    {
-      "source": "/validate-email",
-      "destination": { "service": "web", "path": "/index.html" }
-    },
-    {
-      "source": "/change-password",
-      "destination": { "service": "web", "path": "/index.html" }
-    },
-    {
-      "source": "/login",
-      "destination": { "service": "web", "path": "/index.html" }
-    },
-    {
-      "source": "/forgot-password",
-      "destination": { "service": "web", "path": "/index.html" }
-    },
-    {
-      "source": "/register",
-      "destination": { "service": "web", "path": "/index.html" }
-    },
-    {
-      "source": "/board",
-      "destination": { "service": "web", "path": "/index.html" }
-    },
-
     {
       "source": "/(.*)",
-      "destination": { "service": "web" }
+      "destination": {
+        "service": "web"
+      }
     }
   ]
 }
