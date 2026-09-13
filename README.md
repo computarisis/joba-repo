@@ -1,3 +1,7 @@
+
+# Joba
+---
+
 This application allows people to register and track job applications; users can quickly create, update,  and delete records, which include relevant data like application date, status, job site, compensation range, etc.
 
 **Live demo:** https://joba-repo.vercel.app/
@@ -40,11 +44,12 @@ A couple of ideas:
 
 ## **Testing (AI assisted)**
 
-We instructed AI to generate the boilerplate for these automated tests. They cover all endpoints of the backend.
+We instructed an AI to generate the boilerplate for these semi-automated integration tests. They cover all endpoints of the backend. The code is designed to test in your local environment.
 
-You need to have an email that can be checked; set the email in unit.sh. Then do :
+You need to have an email that can be checked; set the email in `integration.sh`. Then, from root, do :
 
 ```text
-Chmod +x unit.sh 
-./unit.sh
+chmod +x testing/integration.sh 
+./testing/integration.sh
 ```
+The tests will only prompt for input when validating the email related features.
