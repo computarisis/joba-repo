@@ -66,7 +66,7 @@ function Benefits() {
 
               <span className="text-sm text-red-600  font-bold ">Less chaos</span> 
               <h2 className= "text-4xl font-extrabold"> 
-                Spend less time managing the search and more time moving it forwad
+                Spend less time managing the search and more time moving it forward.
               </h2>
             </div> 
 
@@ -76,7 +76,7 @@ function Benefits() {
                   Never Lose Track of an Application
                 </h3>
                 <p>
-                  Keep every job opportunity, interview date, and recruiter contact in one central dashboard. Eliminate messy spreadsheets and scattered emails so you always know exactly where you stand.
+                  Keep every job opportunity, interview date, and recruiter contact in one central dashboard. 
                 </p>
               </div>
 
@@ -85,7 +85,7 @@ function Benefits() {
                   Stay Prepared for Every Interview
                 </h3>
                 <p>
-                  Log interview feedback, salary ranges, and custom notes instantly. Having job details organized at your fingertips helps you prep faster, follow up on time, and make stronger impressions.
+                  Log interview feedback, salary ranges, and custom notes instantly. 
                 </p>
               </div>
 
@@ -94,7 +94,7 @@ function Benefits() {
                   Make Smarter Career Moves
                 </h3>
                 <p>
-                  Get clear insights into your search momentum, response rates, and offer stages. Visualizing your progress helps you refine your strategy and land the right offer with confidence.
+                  Get clear insights into your response rate, search momentum, target salary ranges,  and offer stages.
                 </p>
               </div>
             </div> 
@@ -127,7 +127,7 @@ function Testimony() {
               Software Engineer
             </span>
             <p>
-              &quot;I was applying to dozens of roles and losing track of follow-ups. This app completely saved my job search—I landed three offers because I never missed an interview prep or deadline.&quot;
+              &quot; This made my job hunt so much less stressful! .&quot;
             </p>
           </div>
 
@@ -141,7 +141,7 @@ function Testimony() {
             </span>
 
             <p>
-              &quot;Ditching my messy Notion setup for this was the best decision. Having salary notes, interviewer details, and application status in one place kept me totally stress-free.&quot;
+              &quot; I love the ability to be able to take notes and easily edit my applications; it's made the job search very efficient for me. &quot;
             </p>
           </div>
 
@@ -154,7 +154,7 @@ function Testimony() {
               Marketing Manager
             </span>
             <p>
-              &quot;The response rate insights helped me realize which resume versions actually worked. It turned what is usually a chaotic process into an organized, strategic routine.&quot;
+              &quot; Joba allowed me to keep a compact mental map of each step of the process for my applications; definitely a product I'd recommend! .&quot;
             </p>
           </div>
 
@@ -179,8 +179,8 @@ function Features() {
                 <div className="text-sm text-red-600  font-bold ">Everything in one place</div> 
                 <div className="font-extrabold text-4xl ">Built around the way a real job search works </div> 
 
-                <div className="text-bold text-gray-500">Instead of scatterred notes, eails, and spreadsheets, Joba gives each opportunity 
-                a clear place to live  </div> 
+                <div className="text-bold text-gray-500">Instead of scattered notes, emails, and spreadsheets, Joba gives each opportunity 
+                a clear place to live.  </div> 
               </div> 
             </div> 
           </div>
@@ -192,7 +192,8 @@ function Features() {
                   Application tracking 
                 </h3>
                 <p>
-                Keep every job opportunity and its current stage in one place, from saved and applied to interview, offer, or rejection.
+                  Keep track of every application status in a single place; let simplicity and extreme organization be the keys to 
+                  not missing on your best opportunity.
                 </p>
             </div> 
     
@@ -204,7 +205,8 @@ function Features() {
                   Interview planning
                 </h3>
                 <p>
-                  Store interview dates, recruiter contacts, notes, salary details, and follow-up information where you can find them quickly. 
+                  Store notes, recruiter contacts,  and relevant interview data. You'll be able to make informed preparation plans for 
+                  the different positions you decide to target. 
                 </p>
             </div> 
 
@@ -216,13 +218,13 @@ function Features() {
                   Job-search insights 
                 </h3>
                 <p>
-                    See how your search is progressing so you can understand response rates, identify patterns, and make better decisions. 
+                  Filter your applications and see how your search is progressing. This puts the intelligence on your court to both prepare adequately for your next best 
+                  chance, and for best targeting the positions where you have the best odds. 
                 </p>
             </div> 
 
 
           </div>
-
         </div> 
 
 
